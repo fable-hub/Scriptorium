@@ -1,0 +1,56 @@
+---
+title: Fable Scriptorium
+description: A family of focused F# libraries for building and testing Fable applications.
+template: splash
+hero:
+  tagline: A family of focused F# libraries for building and testing Fable applications.
+  image:
+    file: ../../assets/fable-scriptorium.png
+  actions:
+    - text: Getting Started
+      link: /guides/getting-started
+      icon: right-arrow
+    - text: Why Scriptorium?
+      link: /guides/why
+      icon: information
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## The Libraries
+
+<CardGrid>
+  <Card title="Fable.Ink" icon="pencil">
+    Pure ANSI colour and style for terminal output. Wrap any string in `red`, `bold`, `underline`, and more. Respects `NO_COLOR`. No dependencies.
+  </Card>
+  <Card title="Fable.Parchment" icon="document">
+    Structured logging with severity levels and a pluggable sink system. Create loggers, scope them with child prefixes, and route output to the console or your own sink.
+  </Card>
+  <Card title="Fable.Nib" icon="approve-check">
+    Composable, fluent assertions. Chain expectations with `>>`, drill into nested values with `inside`, label failures with `tag`, and collect *every* failure before throwing — never just the first.
+  </Card>
+  <Card title="Fable.Quill" icon="rocket">
+    The test runner that holds everything together. Sync and async tests, focus mode, pending tests, per-test timeouts, slow-test warnings, and clickable source links in terminal output.
+  </Card>
+</CardGrid>
+
+## Add-ons
+
+<CardGrid>
+  <Card title="Fable.Nib.Snapshot" icon="magnifier">
+    Snapshot assertions for Fable.Nib. Serialize any value to a file on first run, then compare on every subsequent run. Update with a single environment variable.
+  </Card>
+  <Card title="Fable.Nib.Browser" icon="laptop">
+    Playwright-powered DOM assertions and test helpers for end-to-end testing. Wraps Playwright's `expect` API behind Nib's composable `DomAssertion` type.
+  </Card>
+</CardGrid>
+
+## Quick Links
+
+<CardGrid>
+  <LinkCard title="Getting Started" href="/guides/getting-started" description="Set up your first Scriptorium test suite in minutes." />
+  <LinkCard title="Fable.Nib assertions" href="/nib/assertions" description="The full list of built-in assertion functions." />
+  <LinkCard title="Fable.Quill test DSL" href="/quill/test-dsl" description="test, xtest, ftest, testList, testAsync, and more." />
+  <LinkCard title="Snapshot testing" href="/nib-snapshot/overview" description="Lock in serialised output and catch regressions automatically." />
+</CardGrid>

@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="EasyBuild.PackageReleaseNotes.Tasks" Version="2.1.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageVersion>
+    <PackageVersion Include="Fable.Core" Version="4.5.0" />
+    <PackageVersion Include="Fable.Promise" Version="3.2.0" />
+    <PackageVersion Include="FSharp.Core" Version="10.0.101" />
+    <PackageVersion Include="Glutinum.Types" Version="0.1.0" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+</Project>

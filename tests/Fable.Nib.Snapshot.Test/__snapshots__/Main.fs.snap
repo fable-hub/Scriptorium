@@ -1,0 +1,21 @@
+=== Fable.Nib.Snapshot > matches existing snapshot via TestContext ===
+{
+  "Age": 30,
+  "Name": "Alice"
+}
+=== end-snapshot ===
+
+=== custom-serializer ===
+custom:42
+=== end-snapshot ===
+
+=== first-run ===
+{
+  "Age": 30,
+  "Name": "Alice"
+}
+=== end-snapshot ===
+
+=== mismatch-test ===
+"expected value"
+=== end-snapshot ===

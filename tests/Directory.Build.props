@@ -1,0 +1,10 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Disable deterministic build remapping for test projects.
+         Otherwise [<CallerFilePath>] returns non-existent paths like /_//tests/...,
+         which breaks snapshot file lookup that relies on the test file's directory. -->
+    <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

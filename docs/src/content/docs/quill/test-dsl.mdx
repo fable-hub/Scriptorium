@@ -1,0 +1,179 @@
+---
+title: Test DSL
+description: Complete reference for test, testList, xtest, ftest, testAsync, and all other test definition functions.
+---
+
+The test DSL lives on the `Test` static class. Bring it into scope with `open type`:
+
+```fsharp
+open type Fable.Quill.Test
+```
+
+## Test groups
+
+### `testList`
+
+Groups tests under a named list. Lists can be nested to any depth. The list name becomes part of the path for all contained tests.
+
+```fsharp
+testList ("User service", [
+    testList ("create", [
+        test ("creates with valid data", fun _ -> ...)
+        test ("rejects empty name", fun _ -> ...)
+    ])
+    testList ("delete", [
+        test ("removes the record", fun _ -> ...)
+    ])
+])
+```
+
+A configurer on a list propagates to all children (see [Configuration](/quill/configuration)):
+
+```fsharp
+testList ("integration tests", skipIfJavaScript, [
+    test ("uses .NET filesystem", fun _ -> ...)
+    test ("reads environment", fun _ -> ...)
+])
+```
+
+### `xtestList` — pending list
+
+All children are marked as pending, regardless of their individual marks. Their bodies never execute.
+
+```fsharp
+xtestList ("WIP features", [
+    test ("feature A", fun _ -> ...)  // pending, body never runs
+    test ("feature B", fun _ -> ...)  // pending, body never runs
+])
+```
+
+### `ftestList` — focused list
+
+All children run as focused tests. Sibling tests and lists outside this list are skipped.
+
+```fsharp
+ftestList ("focused group", [
+    test ("a", fun _ -> ...)  // runs
+    test ("b", fun _ -> ...)  // runs
+])
+// other tests in the suite are skipped
+```
+
+## Sequential tests
+
+### `testSequenced`
+
+By default, `testList` runs all children in parallel. `testSequenced` runs them one after another, in source order. Use this when tests have shared mutable state or must execute in a specific sequence.
+
+```fsharp
+testSequenced ("database lifecycle", [
+    test ("create table", fun _ -> createTable ())
+    test ("insert rows", fun _ -> insertRows ())
+    test ("verify count", fun _ -> assertThat (rowCount ()) (isEqualTo 3))
+    test ("drop table", fun _ -> dropTable ())
+])
+```
+
+:::note
+Outside of a `testSequenced` block, all tests in a `testList` run concurrently. Async tests use `Async.Parallel`; sync tests are executed immediately in order (since they cannot yield).
+:::
+
+## Sync tests
+
+### `test`
+
+A normal synchronous test. The body receives a `TestContext` but can ignore it with `_`:
+
+```fsharp
+test ("basic equality", fun _ ->
+    assertThat 42 (isEqualTo 42)
+)
+
+// With a configurer
+test ("platform only", skipIfJavaScript, fun _ ->
+    assertThat System.Environment.MachineName isNotNull
+)
+```
+
+### `xtest` — pending
+
+A pending test. The body is **never executed**. The test appears in output as `*` (yellow).
+
+```fsharp
+xtest ("not implemented yet", fun _ ->
+    assertThat 1 (isEqualTo 99)  // never runs
+)
+```
+
+### `ftest` — focused
+
+A focused test. When any focused test is present, all non-focused tests produce `Skipped` results.
+
+```fsharp
+ftest ("I'm debugging this", fun _ ->
+    assertThat result (isEqualTo expected)
+)
+```
+
+:::caution[Remove before committing]
+Fable.Quill detects when tests run in CI and will throw an error if any tests are focused.
+:::
+
+## Async tests
+
+### `testAsync`
+
+An async test. The default timeout is 5 000 ms. A test that exceeds its timeout fails with `"Test timed out after Nms"`.
+
+```fsharp
+testAsync ("fetches data", fun content -> async {
+    let! data = fetchDataAsync ()
+    assertThat data.Length (isGreaterThan 0)
+})
+
+// Without TestContext (simple form)
+testAsync ("simple async", async {
+    do! Async.Sleep 10
+    assertThat true isTrue
+})
+```
+
+### `xtestAsync` — pending async
+
+Marks an async test as pending. The body never executes.
+
+```fsharp
+xtestAsync ("pending feature", async {
+    // never runs
+})
+```
+
+### `ftestAsync` — focused async
+
+Focuses an async test.
+
+```fsharp
+ftestAsync ("I'm debugging this async path", fun _ -> async {
+    let! result = someAsyncComputation ()
+    assertThat result isExpected
+})
+```
+
+:::caution[Remove before committing]
+Fable.Quill detects when tests run in CI and will throw an error if any tests are focused.
+:::
+
+## Placeholder tests
+
+### `todo`
+
+A named placeholder with no body. Appears as `*` (yellow/pending) in output. Use it to describe tests you plan to write later.
+
+```fsharp
+testList ("payment processor", [
+    test ("charges the card", fun _ -> ...)
+    todo "handles declined cards"
+    todo "handles network timeout"
+    todo "retries on transient error"
+])
+```

@@ -1,0 +1,122 @@
+---
+title: Getting Started
+description: Set up your first Fable Scriptorium test suite from scratch.
+prev: false
+next: false
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { Image } from "astro:assets";
+
+import outputExampleImage from "./assets/output-example.png";
+
+This guide walks you through installing Fable.Quill and Fable.Nib, writing your first test, and running it.
+
+## Prerequisites
+
+Required:
+
+- .NET SDK/Runtime
+- [Fable](https://fable.io)
+
+If needed:
+
+- Node.js
+
+## Setup
+
+<Steps>
+
+1. Create a test project
+
+    ```sh
+    dotnet new console -lang F# -n YourProjectName
+    cd YourProjectName
+    ```
+
+2. Add the packages
+
+    ```sh
+    dotnet add package Fable.Quill
+    dotnet add package Fable.Nib
+    ```
+
+3. Write your first test
+
+    ```fs
+    // Program.js
+    module YourProjectName.Main
+
+    open Fable.Nib.Assertion
+    open type Fable.Quill.Test
+    open type Fable.Quill.Runner
+
+    [<EntryPoint>]
+    let main _ =
+        runTests [
+            testList ("Calculator", [
+
+                test ("add returns the sum", fun _ ->
+                    assertThat (1 + 1) (isEqualTo 2)
+                )
+
+                test ("multiple assertions can be chained", fun _ ->
+                    assertThat 42 (
+                        isGreaterThan 0
+                        >> isLessThan 100
+                        >> isNotEqualTo 0
+                    )
+                )
+            ])
+        ]
+    ```
+
+4. Finally run the tests
+
+    ```sh title=""
+    # JavaScript
+    dotnet fable --runScript
+
+    # .NET
+    dotnet run
+    ```
+
+    You should see output like this:
+
+    <div style={{ display: "flex", justifyContent: "center" }}>
+        <Image width="500px" src={outputExampleImage} alt="Example test output" />
+    </div>
+
+</Steps>
+
+## What's next?
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+<CardGrid>
+
+    <LinkCard
+        title="Test DSL"
+        href="/quill/test-dsl/"
+        description="Async tests, focus mode, pending tests, and testSequenced in Fable.Quill."
+    />
+
+    <LinkCard
+        title="Assertion functions"
+        href="/nib/assertions/"
+        description="Learn how to write and compose assertions."
+    />
+
+    <LinkCard
+        title="Snapshot testing"
+        href="/nib-snapshot/overview/"
+        description="Don't worry about writing assertions for complex objects. Just snap and compare."
+    />
+
+    <LinkCard
+        title="DOM testing"
+        href="/nib-browser/overview/"
+        description="Playwright-powered DOM assertions and browser test helpers."
+    />
+
+</CardGrid>
