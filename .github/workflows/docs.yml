@@ -1,0 +1,48 @@
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+name: Docs deployment
+
+jobs:
+
+  docs-deploy:
+    runs-on: ubuntu-latest
+    name: Deploy docs
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: 'package.json'
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Make the dlls available for the docs
+        run:
+          dotnet publish -c Debug
+
+      - name: Build documentation
+        run:
+          npx astro build
+        working-directory: ./docs
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/dist
