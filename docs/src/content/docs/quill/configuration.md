@@ -160,6 +160,3 @@ Runner.runTestsWith(timeout 5000, [    // global: 5s
     ])
 ])
 ```
-## See also
-
-- [Runner](/quill/runner) — `runTests`, `runTestsWith`, exit codes, and `TestResult`
