@@ -15,6 +15,6 @@ type PublishCommand() =
     override __.Execute(_, _, ct) =
         DocsCommand().Execute(null, DocsSettings(IsWatch = false), ct) |> ignore
 
-        GhPages.run (dist = VirtualWorkspace.docs.dist.``.``)
+        GhPages.run (dist = "dist", nojekyll = true, workingDirectory = VirtualWorkspace.docs.``.``)
 
         0

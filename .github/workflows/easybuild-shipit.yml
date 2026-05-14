@@ -55,6 +55,12 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
       # Below is an example, for NuGet packages (to demonstrate that we are getting
       # the API key from the OIDC token exchange and not from a secret in the repository).
       #
@@ -66,7 +72,7 @@ jobs:
           # Secret is your NuGet username, e.g. andrewlock
           # This is actually a public information, so using a secret is probably overkill
           # if you want you can just hardcode your NuGet username here and not use a secret at all.
-          user: ${{ secrets.NUGET_USER }}
+          user: MangelMaxime
 
       - name: Release
         run: ./build.sh automated-release

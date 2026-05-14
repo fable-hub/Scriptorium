@@ -4,6 +4,7 @@ open Spectre.Console.Cli
 open EasyBuild.Commands.Test
 open EasyBuild.Commands.Docs
 open EasyBuild.Commands.Publish
+open EasyBuild.Commands.AutomatedRelease
 open EasyBuild.Tools.Husky
 open EasyBuild.Tools.Npm
 
@@ -26,6 +27,13 @@ let main args =
         config
             .AddCommand<PublishCommand>("publish")
             .WithDescription("Publish the documentation to GitHub Pages")
+        |> ignore
+
+        config
+            .AddCommand<AutomatedReleaseCommand>("automated-release")
+            .WithDescription(
+                "Automate the release process by packing and pushing the NuGet packages"
+            )
         |> ignore
 
         config
