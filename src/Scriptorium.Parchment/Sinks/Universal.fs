@@ -4,6 +4,9 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Scriptorium.Parchment
 
+/// <summary>
+/// Sinks that work on all the supported runtimes.
+/// </summary>
 module Universal =
 
     let private stdout (msg: string) : unit =
