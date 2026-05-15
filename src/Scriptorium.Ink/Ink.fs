@@ -104,11 +104,3 @@ let dim (s: string) = wrapStyle "2" "22" s
 let italic (s: string) = wrapStyle "3" "23" s
 let underline (s: string) = wrapStyle "4" "24" s
 let strikethrough (s: string) = wrapStyle "9" "29" s
-
-(**
-
-This is a test test
-
-**strong**
-
-*)
