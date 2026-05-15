@@ -17,6 +17,8 @@ type DocsCommand() =
     interface ICommandLimiter<DocsSettings>
 
     override __.Execute(_, settings, _) =
+        Command.Run("dotnet", "publish -c Debug")
+
         if settings.IsWatch then
             Command.RunAsync("npx", "astro dev", workingDirectory = Workspace.docs.``.``)
             |> Async.AwaitTask
