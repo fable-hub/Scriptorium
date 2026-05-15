@@ -1,9 +1,9 @@
 ---
 title: Extending
-description: How to extend Fable.Nib with custom assertions and new assertion types.
+description: How to extend Scriptorium.Nib with custom assertions and new assertion types.
 ---
 
-`Fable.Nib` is built around a single, small abstraction: the `Assertion<'a, 'b>` type.
+`Scriptorium.Nib` is built around a single, small abstraction: the `Assertion<'a, 'b>` type.
 
 Everything else — the built-in assertions, the combinators, and the packages that extend Nib — is built on top of it.
 
@@ -55,14 +55,14 @@ assertThat "alice@example.com" (isNotEqualTo "" >> isValidEmail)
 
 You can extend `TestContext` with type extensions to provide domain-specific assertion helpers that automatically use contextual information like the test path and file location.
 
-For example, `Fable.Nib.Snapshot` extends `TestContext` with `snapshot` and `snapshotWith` methods that derive the snapshot name from `ctx.Path` and the file path from `ctx.FilePath`.
+For example, `Scriptorium.Nib.Snapshot` extends `TestContext` with `snapshot` and `snapshotWith` methods that derive the snapshot name from `ctx.Path` and the file path from `ctx.FilePath`.
 
 ```fsharp
-namespace Fable.Nib.Snapshot
+namespace Scriptorium.Nib.Snapshot
 
-open Fable.Quill
-open Fable.Nib
-open Fable.Nib.Assertion
+open Scriptorium.Quill
+open Scriptorium.Nib
+open Scriptorium.Nib.Assertion
 
 [<AutoOpen>]
 module SnapshotContextExtensions =

@@ -3,10 +3,10 @@ title: Configuration
 description: TestConfig, skipIf, timeout, slowThreshold, and how configuration is inherited.
 ---
 
-`Fable.Quill` lets you configure every test and list with a `TestConfig -> TestConfig` function. Configuration is inherited from the global level down through `testList` to individual tests, with each level able to override its parent.
+`Scriptorium.Quill` lets you configure every test and list with a `TestConfig -> TestConfig` function. Configuration is inherited from the global level down through `testList` to individual tests, with each level able to override its parent.
 
 ```fs
-open Fable.Quill
+open Scriptorium.Quill
 ```
 
 ## TestConfig

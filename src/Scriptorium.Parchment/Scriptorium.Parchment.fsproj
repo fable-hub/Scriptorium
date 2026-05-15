@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Parchment.fs" />
+    <Compile Include="Sinks/Universal.fs" />
+    <Compile Include="Sinks/JavaScript.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Fable.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Scriptorium.Ink\Scriptorium.Ink.fsproj" />
+  </ItemGroup>
+
+</Project>

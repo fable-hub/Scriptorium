@@ -9,7 +9,7 @@ description: Structural combinators for navigating, labelling, and controlling a
 
 module Nib.Combinators
 
-open Fable.Nib.Assertion
+open Scriptorium.Nib.Assertion
 
 type Author =
     {

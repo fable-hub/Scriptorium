@@ -41,12 +41,12 @@ It should be one of the following:
         """
 
 type Project =
-    | Fable_Ink
-    | Fable_Nib
-    | Fable_Nib_Dom
-    | Fable_Nib_Snapshot
-    | Fable_Parchment
-    | Fable_Quill
+    | Scriptorium_Ink
+    | Scriptorium_Nib
+    | Scriptorium_Nib_Browser
+    | Scriptorium_Nib_Snapshot
+    | Scriptorium_Parchment
+    | Scriptorium_Quill
     | AllProject
 
     static member All =
@@ -57,22 +57,22 @@ type Project =
     member this.ToArgs =
         match this with
         | AllProject -> "all"
-        | Fable_Ink -> "ink"
-        | Fable_Nib -> "nib"
-        | Fable_Nib_Dom -> "nib-dom"
-        | Fable_Nib_Snapshot -> "nib-snapshot"
-        | Fable_Parchment -> "parchment"
-        | Fable_Quill -> "quill"
+        | Scriptorium_Ink -> "ink"
+        | Scriptorium_Nib -> "nib"
+        | Scriptorium_Nib_Browser -> "nib-browser"
+        | Scriptorium_Nib_Snapshot -> "nib-snapshot"
+        | Scriptorium_Parchment -> "parchment"
+        | Scriptorium_Quill -> "quill"
 
     static member fromString(value: string) =
         match value.ToLowerInvariant() with
         | "all" -> AllProject
-        | "ink" -> Fable_Ink
-        | "nib" -> Fable_Nib
-        | "nib-dom" -> Fable_Nib_Dom
-        | "nib-snapshot" -> Fable_Nib_Snapshot
-        | "parchment" -> Fable_Parchment
-        | "quill" -> Fable_Quill
+        | "ink" -> Scriptorium_Ink
+        | "nib" -> Scriptorium_Nib
+        | "nib-browser" -> Scriptorium_Nib_Browser
+        | "nib-snapshot" -> Scriptorium_Nib_Snapshot
+        | "parchment" -> Scriptorium_Parchment
+        | "quill" -> Scriptorium_Quill
         | _ ->
             failwith
                 $"""Unknown project value: '%s{value}'
@@ -80,7 +80,7 @@ type Project =
 It should be one of the following:
 - ink
 - nib
-- nib-dom
+- nib-browser
 - nib-snapshot
 - parchment
 - quill
@@ -88,38 +88,38 @@ It should be one of the following:
 
     member this.Dir =
         match this with
-        | Fable_Ink -> Workspace.tests.``Fable.Ink.Test``.``.``
-        | Fable_Nib -> Workspace.tests.``Fable.Nib.Test``.``.``
-        | Fable_Nib_Dom -> Workspace.tests.``Fable.Nib.Browser.Test``.``.``
-        | Fable_Nib_Snapshot -> Workspace.tests.``Fable.Nib.Snapshot.Test``.``.``
-        | Fable_Parchment -> Workspace.tests.``Fable.Parchment.Test``.``.``
-        | Fable_Quill -> Workspace.tests.``Fable.Quill.Test``.``.``
+        | Scriptorium_Ink -> Workspace.tests.``Scriptorium.Ink.Test``.``.``
+        | Scriptorium_Nib -> Workspace.tests.``Scriptorium.Nib.Test``.``.``
+        | Scriptorium_Nib_Browser -> Workspace.tests.``Scriptorium.Nib.Browser.Test``.``.``
+        | Scriptorium_Nib_Snapshot -> Workspace.tests.``Scriptorium.Nib.Snapshot.Test``.``.``
+        | Scriptorium_Parchment -> Workspace.tests.``Scriptorium.Parchment.Test``.``.``
+        | Scriptorium_Quill -> Workspace.tests.``Scriptorium.Quill.Test``.``.``
         | AllProject -> failwith "All is not a real project, it should be captured before"
 
     member this.SupportedRuntimes =
         match this with
-        | Fable_Ink ->
+        | Scriptorium_Ink ->
             [
                 DotNet
                 JavaScript
             ]
-        | Fable_Nib ->
+        | Scriptorium_Nib ->
             [
                 DotNet
                 JavaScript
             ]
-        | Fable_Nib_Dom -> [ JavaScript ]
-        | Fable_Nib_Snapshot ->
+        | Scriptorium_Nib_Browser -> [ JavaScript ]
+        | Scriptorium_Nib_Snapshot ->
             [
                 DotNet
                 JavaScript
             ]
-        | Fable_Parchment ->
+        | Scriptorium_Parchment ->
             [
                 DotNet
                 JavaScript
             ]
-        | Fable_Quill ->
+        | Scriptorium_Quill ->
             [
                 DotNet
                 JavaScript
@@ -136,15 +136,15 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
         |> CmdLine.appendRaw "--runScript"
         |> CmdLine.toString
 
-    // Ensure Playwright browsers are installed for the DOM tests
+    // Ensure Playwright browsers are installed for the browser tests
     match project with
-    | Fable_Nib_Dom ->
+    | Scriptorium_Nib_Browser ->
         Command.Run("npx", "playwright install chromium", workingDirectory = project.Dir)
-    | Fable_Ink
-    | Fable_Nib
-    | Fable_Nib_Snapshot
-    | Fable_Parchment
-    | Fable_Quill
+    | Scriptorium_Ink
+    | Scriptorium_Nib
+    | Scriptorium_Nib_Snapshot
+    | Scriptorium_Parchment
+    | Scriptorium_Quill
     | AllProject -> ()
 
     if isWatch then
@@ -183,7 +183,7 @@ type TestSettings() =
 Accepted values:
 - ink
 - nib
-- nib-dom
+- nib-browser
 - nib-snapshot
 - parchment
 - quill

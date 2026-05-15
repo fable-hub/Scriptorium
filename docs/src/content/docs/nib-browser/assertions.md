@@ -1,10 +1,10 @@
 ---
 title: Assertions Reference
-description: Complete list of built-in DOM assertion functions in Fable.Nib.Browser.
+description: Complete list of built-in DOM assertion functions in Scriptorium.Nib.Browser.
 ---
 
 ```fsharp
-open Fable.Nib.Browser
+open Scriptorium.Nib.Browser
 ```
 
 All DOM assertions wrap Playwright's `LocatorAssertions` (`expect(locator).*`). They operate on a `Locator` subject.

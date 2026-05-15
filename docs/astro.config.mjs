@@ -13,12 +13,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
-    base: '/Fable.Scriptorium/',
+    base: '/Scriptorium/',
     integrations: [
         fsharpLiterate(),
         starlight({
-            title: 'Fable Scriptorium',
-            social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/fable-hub/Fable.Scriptorium' }],
+            title: 'Scriptorium',
+            social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/fable-hub/Scriptorium' }],
             customCss: [
                 './src/styles/custom.css',
             ],
@@ -27,12 +27,12 @@ export default defineConfig({
                 starlightLinksValidator(),
                 fsharpOracle({
                     assemblies: [
-                        resolve(__dirname, '../src/Fable.Ink/bin/Debug/netstandard2.1/publish/Fable.Ink.dll'),
-                        resolve(__dirname, '../src/Fable.Nib/bin/Debug/netstandard2.1/publish/Fable.Nib.dll'),
-                                                resolve(__dirname, '../src/Fable.Nib.Browser/bin/Debug/netstandard2.1/publish/Fable.Nib.Browser.dll'),
-                        resolve(__dirname, '../src/Fable.Nib.Snapshot/bin/Debug/net10.0/publish/Fable.Nib.Snapshot.dll'),
-                        resolve(__dirname, '../src/Fable.Parchment/bin/Debug/netstandard2.1/publish/Fable.Parchment.dll'),
-                        resolve(__dirname, '../src/Fable.Quill/bin/Debug/netstandard2.1/publish/Fable.Quill.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Ink/bin/Debug/netstandard2.1/publish/Scriptorium.Ink.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Nib/bin/Debug/netstandard2.1/publish/Scriptorium.Nib.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Nib.Browser/bin/Debug/netstandard2.1/publish/Scriptorium.Nib.Browser.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Nib.Snapshot/bin/Debug/net10.0/publish/Scriptorium.Nib.Snapshot.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Parchment/bin/Debug/netstandard2.1/publish/Scriptorium.Parchment.dll'),
+                        resolve(__dirname, '../src/Scriptorium.Quill/bin/Debug/netstandard2.1/publish/Scriptorium.Quill.dll'),
                     ],
                     output: 'api',
                     sidebar: { label: 'API Reference' }
@@ -48,19 +48,19 @@ export default defineConfig({
                     ],
                 },
                 {
-                    label: 'Fable.Ink',
+                    label: 'Scriptorium.Ink',
                     items: [
                         'ink/overview'
                     ],
                 },
                 {
-                    label: 'Fable.Parchment',
+                    label: 'Scriptorium.Parchment',
                     items: [
                         'parchment/overview',
                     ],
                 },
                 {
-                    label: 'Fable.Nib',
+                    label: 'Scriptorium.Nib',
                     items: [
                         'nib/overview',
                         'nib/combinators',
@@ -69,7 +69,7 @@ export default defineConfig({
                     ],
                 },
                 {
-                    label: 'Fable.Quill',
+                    label: 'Scriptorium.Quill',
                     items: [
                         'quill/overview',
                         'quill/test-dsl',
@@ -78,7 +78,7 @@ export default defineConfig({
                     ],
                 },
                 {
-                    label: 'Fable.Nib.Browser',
+                    label: 'Scriptorium.Nib.Browser',
                     items: [
                         'nib-browser/overview',
                         'nib-browser/assertions',
@@ -86,7 +86,7 @@ export default defineConfig({
                     ],
                 },
                 {
-                    label: 'Fable.Nib.Snapshot',
+                    label: 'Scriptorium.Nib.Snapshot',
                     items: [
                         'nib-snapshot/overview',
                         'nib-snapshot/configuration',
@@ -97,12 +97,12 @@ export default defineConfig({
                     collapsed: true, // Make the section less intrusive
                     items: [
                         ...makeChangelogsSidebarLinks([
-                            { type: 'all', base: 'changelog/fable-ink', label: 'Fable.Ink' },
-                            { type: 'all', base: 'changelog/fable-parchment', label: 'Fable.Parchment' },
-                            { type: 'all', base: 'changelog/fable-nib', label: 'Fable.Nib' },
-                            { type: 'all', base: 'changelog/fable-nib-snapshot', label: 'Fable.Nib.Snapshot' },
-                            { type: 'all', base: 'changelog/fable-nib-browser', label: 'Fable.Nib.Browser' },
-                            { type: 'all', base: 'changelog/fable-quill', label: 'Fable.Quill' },
+                            { type: 'all', base: 'changelog/scriptorium-ink', label: 'Scriptorium.Ink' },
+                            { type: 'all', base: 'changelog/scriptorium-parchment', label: 'Scriptorium.Parchment' },
+                            { type: 'all', base: 'changelog/scriptorium-nib', label: 'Scriptorium.Nib' },
+                            { type: 'all', base: 'changelog/scriptorium-nib-snapshot', label: 'Scriptorium.Nib.Snapshot' },
+                            { type: 'all', base: 'changelog/scriptorium-nib-browser', label: 'Scriptorium.Nib.Browser' },
+                            { type: 'all', base: 'changelog/scriptorium-quill', label: 'Scriptorium.Quill' },
                         ])
                     ]
                 }

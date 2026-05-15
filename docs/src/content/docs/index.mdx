@@ -1,17 +1,17 @@
 ---
-title: Fable Scriptorium
+title: Scriptorium
 description: A family of focused F# libraries for building and testing Fable applications.
 template: splash
 hero:
   tagline: A family of focused F# libraries for building and testing Fable applications.
   image:
-    file: ../../assets/fable-scriptorium.png
+    file: ../../assets/scriptorium.png
   actions:
     - text: Getting Started
-      link: /Fable.Scriptorium/guides/getting-started
+      link: /Scriptorium/guides/getting-started
       icon: right-arrow
     - text: Why Scriptorium?
-      link: /Fable.Scriptorium/guides/why
+      link: /Scriptorium/guides/why
       icon: information
       variant: minimal
 ---
@@ -21,16 +21,16 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 ## The Libraries
 
 <CardGrid>
-  <Card title="Fable.Ink" icon="pencil">
+  <Card title="Scriptorium.Ink" icon="pencil">
     Pure ANSI colour and style for terminal output. Wrap any string in `red`, `bold`, `underline`, and more. Respects `NO_COLOR`. No dependencies.
   </Card>
-  <Card title="Fable.Parchment" icon="document">
+  <Card title="Scriptorium.Parchment" icon="document">
     Structured logging with severity levels and a pluggable sink system. Create loggers, scope them with child prefixes, and route output to the console or your own sink.
   </Card>
-  <Card title="Fable.Nib" icon="approve-check">
+  <Card title="Scriptorium.Nib" icon="approve-check">
     Composable, fluent assertions. Chain expectations with `>>`, drill into nested values with `inside`, label failures with `tag`, and collect *every* failure before throwing — never just the first.
   </Card>
-  <Card title="Fable.Quill" icon="rocket">
+  <Card title="Scriptorium.Quill" icon="rocket">
     The test runner that holds everything together. Sync and async tests, focus mode, pending tests, per-test timeouts, slow-test warnings, and clickable source links in terminal output.
   </Card>
 </CardGrid>
@@ -38,10 +38,10 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 ## Add-ons
 
 <CardGrid>
-  <Card title="Fable.Nib.Snapshot" icon="magnifier">
-    Snapshot assertions for Fable.Nib. Serialize any value to a file on first run, then compare on every subsequent run. Update with a single environment variable.
+  <Card title="Scriptorium.Nib.Snapshot" icon="magnifier">
+    Snapshot assertions for Scriptorium.Nib. Serialize any value to a file on first run, then compare on every subsequent run. Update with a single environment variable.
   </Card>
-  <Card title="Fable.Nib.Browser" icon="laptop">
+  <Card title="Scriptorium.Nib.Browser" icon="laptop">
     Playwright-powered DOM assertions and test helpers for end-to-end testing. Wraps Playwright's `expect` API behind Nib's composable `DomAssertion` type.
   </Card>
 </CardGrid>
@@ -49,8 +49,8 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 ## Quick Links
 
 <CardGrid>
-  <LinkCard title="Getting Started" href="/Fable.Scriptorium/guides/getting-started" description="Set up your first Scriptorium test suite in minutes." />
-  <LinkCard title="Fable.Nib assertions" href="/Fable.Scriptorium/nib/assertions" description="The full list of built-in assertion functions." />
-  <LinkCard title="Fable.Quill test DSL" href="/Fable.Scriptorium/quill/test-dsl" description="test, xtest, ftest, testList, testAsync, and more." />
-  <LinkCard title="Snapshot testing" href="/Fable.Scriptorium/nib-snapshot/overview" description="Lock in serialised output and catch regressions automatically." />
+  <LinkCard title="Getting Started" href="/Scriptorium/guides/getting-started" description="Set up your first Scriptorium test suite in minutes." />
+  <LinkCard title="Scriptorium.Nib assertions" href="/Scriptorium/nib/assertions" description="The full list of built-in assertion functions." />
+  <LinkCard title="Scriptorium.Quill test DSL" href="/Scriptorium/quill/test-dsl" description="test, xtest, ftest, testList, testAsync, and more." />
+  <LinkCard title="Snapshot testing" href="/Scriptorium/nib-snapshot/overview" description="Lock in serialised output and catch regressions automatically." />
 </CardGrid>

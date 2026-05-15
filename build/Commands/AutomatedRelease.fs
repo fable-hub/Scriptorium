@@ -18,11 +18,11 @@ type AutomatedReleaseCommand() =
 
             DotNet.nugetPush nupkgPath
 
-        packAndPush Workspace.src.``Fable.Ink``.``.``
-        packAndPush Workspace.src.``Fable.Nib``.``.``
-        packAndPush Workspace.src.``Fable.Parchment``.``.``
-        packAndPush Workspace.src.``Fable.Quill``.``.``
-        packAndPush Workspace.src.``Fable.Nib.Browser``.``.``
-        packAndPush Workspace.src.``Fable.Nib.Snapshot``.``.``
+        packAndPush Workspace.src.``Scriptorium.Ink``.``.``
+        packAndPush Workspace.src.``Scriptorium.Nib``.``.``
+        packAndPush Workspace.src.``Scriptorium.Parchment``.``.``
+        packAndPush Workspace.src.``Scriptorium.Quill``.``.``
+        packAndPush Workspace.src.``Scriptorium.Nib.Browser``.``.``
+        packAndPush Workspace.src.``Scriptorium.Nib.Snapshot``.``.``
 
         0

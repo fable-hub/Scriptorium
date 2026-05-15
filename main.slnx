@@ -3,22 +3,22 @@
     <Project Path="build/EasyBuild.fsproj" />
   </Folder>
   <Folder Name="/docs/">
-    <Project Path="docs/Fable.Ink.Docs.fsproj" />
+    <Project Path="docs/Scriptorium.Ink.Docs.fsproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Fable.Ink/Fable.Ink.fsproj" />
-    <Project Path="src/Fable.Nib.Browser/Fable.Nib.Browser.fsproj" />
-    <Project Path="src/Fable.Nib.Snapshot/Fable.Nib.Snapshot.fsproj" />
-    <Project Path="src/Fable.Nib/Fable.Nib.fsproj" />
-    <Project Path="src/Fable.Parchment/Fable.Parchment.fsproj" />
-    <Project Path="src/Fable.Quill/Fable.Quill.fsproj" />
+    <Project Path="src/Scriptorium.Ink/Scriptorium.Ink.fsproj" />
+    <Project Path="src/Scriptorium.Nib.Browser/Scriptorium.Nib.Browser.fsproj" />
+    <Project Path="src/Scriptorium.Nib.Snapshot/Scriptorium.Nib.Snapshot.fsproj" />
+    <Project Path="src/Scriptorium.Nib/Scriptorium.Nib.fsproj" />
+    <Project Path="src/Scriptorium.Parchment/Scriptorium.Parchment.fsproj" />
+    <Project Path="src/Scriptorium.Quill/Scriptorium.Quill.fsproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Fable.Ink.Test/Fable.Ink.Test.fsproj" />
-    <Project Path="tests/Fable.Nib.Browser.Test/Fable.Nib.Browser.Test.fsproj" />
-    <Project Path="tests/Fable.Nib.Snapshot.Test/Fable.Nib.Snapshot.Test.fsproj" />
-    <Project Path="tests/Fable.Nib.Test/Fable.Nib.Test.fsproj" />
-    <Project Path="tests/Fable.Parchment.Test/Fable.Parchment.Test.fsproj" />
-    <Project Path="tests/Fable.Quill.Test/Fable.Quill.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Ink.Test/Scriptorium.Ink.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Nib.Browser.Test/Scriptorium.Nib.Browser.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Nib.Snapshot.Test/Scriptorium.Nib.Snapshot.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Nib.Test/Scriptorium.Nib.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Parchment.Test/Scriptorium.Parchment.Test.fsproj" />
+    <Project Path="tests/Scriptorium.Quill.Test/Scriptorium.Quill.Test.fsproj" />
   </Folder>
 </Solution>

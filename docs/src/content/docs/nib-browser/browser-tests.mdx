@@ -3,7 +3,7 @@ title: Browser tests
 description: BrowserTest helpers and UserEvents for writing Playwright-based end-to-end tests.
 ---
 
-`Fable.Nib.Browser` provides test helpers that integrate with `Fable.Quill`'s test DSL. They automatically create a headless Chromium browser, run the body, then close the browser and page.
+`Scriptorium.Nib.Browser` provides test helpers that integrate with `Scriptorium.Quill`'s test DSL. They automatically create a headless Chromium browser, run the body, then close the browser and page.
 
 ## `BrowserTest`
 
@@ -15,10 +15,10 @@ description: BrowserTest helpers and UserEvents for writing Playwright-based end
 | `BrowserTest.dtestPage(name, body)` | Debug mode: headed, auto-paused, focused, no timeout |
 
 ```fsharp
-open type Fable.Quill.Test
-open type Fable.Quill.Runner
-open type Fable.Nib.Browser.UserEvents
-open type Fable.Nib.Browser.BrowserTest
+open type Scriptorium.Quill.Test
+open type Scriptorium.Quill.Runner
+open type Scriptorium.Nib.Browser.UserEvents
+open type Scriptorium.Nib.Browser.BrowserTest
 
 [<EntryPoint>]
 let main _ =
@@ -64,7 +64,7 @@ BrowserTest.dtestPage ("debug login flow", fun page ->
 ```
 
 :::caution[Never commit dtestPage]
-`dtestPage` marks the test as `ftest` (focused). On CI, `Fable.Quill` will detect focused tests and exit with code 1 — preventing the build from passing.
+`dtestPage` marks the test as `ftest` (focused). On CI, `Scriptorium.Quill` will detect focused tests and exit with code 1 — preventing the build from passing.
 :::
 
 ## User events
@@ -72,7 +72,7 @@ BrowserTest.dtestPage ("debug login flow", fun page ->
 `UserEvents` provides typed wrappers for common Playwright interactions:
 
 ```fsharp
-open type Fable.Nib.Browser.UserEvents
+open type Scriptorium.Nib.Browser.UserEvents
 
 promise {
     do! click (page.locator "button[type=submit]")

@@ -11,14 +11,14 @@ module Nib.Overview
 
 (**
 
-`Fable.Nib` is the assertion layer for the Scriptorium family.
+`Scriptorium.Nib` is the assertion layer for the Scriptorium family.
 
 It works with any F# framework — or directly in application code.
 
 ## Installation
 
 ```sh
-dotnet add package Fable.Nib
+dotnet add package Scriptorium.Nib
 ```
 
 ## Usage
@@ -33,7 +33,7 @@ All assertions follows a consistent pattern:
 
 *)
 
-open Fable.Nib.Assertion
+open Scriptorium.Nib.Assertion
 
 assertThat 42 (isEqualTo 42)
 assertThat "hello" (isNotEqualTo "world")

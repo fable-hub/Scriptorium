@@ -6,7 +6,7 @@ description: Complete reference for test, testList, xtest, ftest, testAsync, and
 The test DSL lives on the `Test` static class. Bring it into scope with `open type`:
 
 ```fsharp
-open type Fable.Quill.Test
+open type Scriptorium.Quill.Test
 ```
 
 ## Test groups
@@ -27,7 +27,7 @@ testList ("User service", [
 ])
 ```
 
-A configurer on a list propagates to all children (see [Configuration](/Fable.Scriptorium/quill/configuration)):
+A configurer on a list propagates to all children (see [Configuration](/Scriptorium/quill/configuration)):
 
 ```fsharp
 testList ("integration tests", skipIfJavaScript, [
@@ -116,7 +116,7 @@ ftest ("I'm debugging this", fun _ ->
 ```
 
 :::caution[Remove before committing]
-Fable.Quill detects when tests run in CI and will throw an error if any tests are focused.
+Scriptorium.Quill detects when tests run in CI and will throw an error if any tests are focused.
 :::
 
 ## Async tests
@@ -160,7 +160,7 @@ ftestAsync ("I'm debugging this async path", fun _ -> async {
 ```
 
 :::caution[Remove before committing]
-Fable.Quill detects when tests run in CI and will throw an error if any tests are focused.
+Scriptorium.Quill detects when tests run in CI and will throw an error if any tests are focused.
 :::
 
 ## Placeholder tests

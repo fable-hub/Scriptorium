@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Set up your first Fable Scriptorium test suite from scratch.
+description: Set up your first Scriptorium test suite from scratch.
 prev: false
 next: false
 ---
@@ -10,7 +10,7 @@ import { Image } from "astro:assets";
 
 import outputExampleImage from "./assets/output-example.png";
 
-This guide walks you through installing Fable.Quill and Fable.Nib, writing your first test, and running it.
+This guide walks you through installing Scriptorium.Quill and Scriptorium.Nib, writing your first test, and running it.
 
 ## Prerequisites
 
@@ -37,8 +37,8 @@ If needed:
 2. Add the packages
 
     ```sh
-    dotnet add package Fable.Quill
-    dotnet add package Fable.Nib
+    dotnet add package Scriptorium.Quill
+    dotnet add package Scriptorium.Nib
     ```
 
 3. Write your first test
@@ -47,9 +47,9 @@ If needed:
     // Program.js
     module YourProjectName.Main
 
-    open Fable.Nib.Assertion
-    open type Fable.Quill.Test
-    open type Fable.Quill.Runner
+    open Scriptorium.Nib.Assertion
+    open type Scriptorium.Quill.Test
+    open type Scriptorium.Quill.Runner
 
     [<EntryPoint>]
     let main _ =
@@ -97,25 +97,25 @@ import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 
     <LinkCard
         title="Test DSL"
-        href="/Fable.Scriptorium/quill/test-dsl/"
-        description="Async tests, focus mode, pending tests, and testSequenced in Fable.Quill."
+        href="/Scriptorium/quill/test-dsl/"
+        description="Async tests, focus mode, pending tests, and testSequenced in Scriptorium.Quill."
     />
 
     <LinkCard
         title="Assertion functions"
-        href="/Fable.Scriptorium/nib/assertions/"
+        href="/Scriptorium/nib/assertions/"
         description="Learn how to write and compose assertions."
     />
 
     <LinkCard
         title="Snapshot testing"
-        href="/Fable.Scriptorium/nib-snapshot/overview/"
+        href="/Scriptorium/nib-snapshot/overview/"
         description="Don't worry about writing assertions for complex objects. Just snap and compare."
     />
 
     <LinkCard
         title="DOM testing"
-        href="/Fable.Scriptorium/nib-browser/overview/"
+        href="/Scriptorium/nib-browser/overview/"
         description="Playwright-powered DOM assertions and browser test helpers."
     />
 

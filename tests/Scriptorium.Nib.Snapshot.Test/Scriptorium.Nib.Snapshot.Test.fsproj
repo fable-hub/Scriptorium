@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Scriptorium.Nib\Scriptorium.Nib.fsproj" />
+    <ProjectReference Include="..\..\src\Scriptorium.Nib.Snapshot\Scriptorium.Nib.Snapshot.fsproj" />
+    <ProjectReference Include="..\..\src\Scriptorium.Quill\Scriptorium.Quill.fsproj" />
+  </ItemGroup>
+
+</Project>

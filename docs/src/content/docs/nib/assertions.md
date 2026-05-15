@@ -1,10 +1,10 @@
 ---
 title: Assertions Reference
-description: Complete list of built-in assertion functions in Fable.Nib.
+description: Complete list of built-in assertion functions in Scriptorium.Nib.
 ---
 
 ```fsharp
-open Fable.Nib.Assertion
+open Scriptorium.Nib.Assertion
 ```
 
 ## Primitive

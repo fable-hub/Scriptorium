@@ -12,12 +12,12 @@ module Ink.Overview
 import { Image } from "astro:assets";
 import demoImage from "./assets/demo.png";
 
-`Fable.Ink` is the colour and style layer for the Scriptorium family. It wraps ANSI escape codes into a small set of composable functions — no dependencies, no configuration required.
+`Scriptorium.Ink` is the colour and style layer for the Scriptorium family. It wraps ANSI escape codes into a small set of composable functions — no dependencies, no configuration required.
 
 ## Installation
 
 ```sh
-dotnet add package Fable.Ink
+dotnet add package Scriptorium.Ink
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ All functions take a `string` and return a `string`, so they work inline in form
 
 *)
 
-open Fable.Ink
+open Scriptorium.Ink
 
 let log text = printfn "%s\n" text
 
@@ -53,5 +53,5 @@ There are foreground colours (`red`, `green`, `blue`, …), background colours (
 
 ## NO_COLOR
 
-`Fable.Ink` follows the [no-color.org](https://no-color.org) convention. When `NO_COLOR` is set, colour functions return the string unchanged. Style functions (`bold`, `dim`, etc.) always apply regardless.
+`Scriptorium.Ink` follows the [no-color.org](https://no-color.org) convention. When `NO_COLOR` is set, colour functions return the string unchanged. Style functions (`bold`, `dim`, etc.) always apply regardless.
 *)

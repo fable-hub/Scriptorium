@@ -9,33 +9,33 @@ export const collections = {
         loader: changelogsLoader([
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-ink',
-                changelog: '../src/Fable.Ink/CHANGELOG.md'
+                base: 'changelog/scriptorium-ink',
+                changelog: '../src/Scriptorium.Ink/CHANGELOG.md'
             },
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-parchment',
-                changelog: '../src/Fable.Parchment/CHANGELOG.md'
+                base: 'changelog/scriptorium-parchment',
+                changelog: '../src/Scriptorium.Parchment/CHANGELOG.md'
             },
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-nib',
-                changelog: '../src/Fable.Nib/CHANGELOG.md'
+                base: 'changelog/scriptorium-nib',
+                changelog: '../src/Scriptorium.Nib/CHANGELOG.md'
             },
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-nib-snapshot',
-                changelog: '../src/Fable.Nib.Snapshot/CHANGELOG.md'
+                base: 'changelog/scriptorium-nib-snapshot',
+                changelog: '../src/Scriptorium.Nib.Snapshot/CHANGELOG.md'
             },
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-nib-browser',
-                changelog: '../src/Fable.Nib.Browser/CHANGELOG.md'
+                base: 'changelog/scriptorium-nib-browser',
+                changelog: '../src/Scriptorium.Nib.Browser/CHANGELOG.md'
             },
             {
                 provider: 'keep-a-changelog',
-                base: 'changelog/fable-quill',
-                changelog: '../src/Fable.Quill/CHANGELOG.md'
+                base: 'changelog/scriptorium-quill',
+                changelog: '../src/Scriptorium.Quill/CHANGELOG.md'
             },
         ]),
     })

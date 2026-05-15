@@ -1,5 +1,5 @@
 {
-    "name": "fable-scriptorium",
+    "name": "scriptorium",
     "type": "module",
     "engines": {
         "node": ">=22.12.0"

@@ -14,8 +14,8 @@ let private page = Unchecked.defaultof<Glutinum.Playwright.Page>
 
 (**
 
-`Fable.Nib.Browser` is the browser-testing layer for the Scriptorium family. It extends `Fable.Nib`'s
-composable assertions with Playwright-powered DOM checks and wraps `Fable.Quill`'s test DSL with
+`Scriptorium.Nib.Browser` is the browser-testing layer for the Scriptorium family. It extends `Scriptorium.Nib`'s
+composable assertions with Playwright-powered DOM checks and wraps `Scriptorium.Quill`'s test DSL with
 helpers that manage browser lifecycle automatically.
 
 :::caution
@@ -25,7 +25,7 @@ This package only works for Fable JavaScript target
 ## Installation
 
 ```sh
-dotnet add package Fable.Nib.Browser
+dotnet add package Scriptorium.Nib.Browser
 npm install -D playwright
 ```
 
@@ -47,7 +47,7 @@ You can read `>>.` as `and`
 
 *)
 
-open Fable.Nib.Browser
+open Scriptorium.Nib.Browser
 open Glutinum.Playwright
 
 let myAssertion: DomAssertion<Locator> =

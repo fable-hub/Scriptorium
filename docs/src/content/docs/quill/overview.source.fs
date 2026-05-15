@@ -16,13 +16,13 @@ let computeAsync _ = async { return 42 }
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Steps } from '@astrojs/starlight/components';
 
-`Fable.Quill` is the test runner for the Scriptorium family.
+`Scriptorium.Quill` is the test runner for the Scriptorium family.
 
 It provides a DSL for defining sync and async tests, a focus / pending / skip system,
 per-test configuration, and a pretty-printer that renders results with colour, indentation,
 and clickable source links in terminal output.
 
-Fable.Quill aims to support all F#/Fable runtimes:
+Scriptorium.Quill aims to support all F#/Fable runtimes:
 
 | Runtime    | Supports |
 | ---------- | :------: |
@@ -34,10 +34,10 @@ Fable.Quill aims to support all F#/Fable runtimes:
 ## Installation
 
 ```sh
-dotnet add package Fable.Quill
+dotnet add package Scriptorium.Quill
 ```
 
-`Fable.Quill` depends on `Fable.Ink`, `Fable.Parchment`, and `Fable.Nib`. A single package reference covers the full stack.
+`Scriptorium.Quill` depends on `Scriptorium.Ink`, `Scriptorium.Parchment`, and `Scriptorium.Nib`. A single package reference covers the full stack.
 
 ## Quick start
 
@@ -51,10 +51,10 @@ import outputExample from "./assets/output-example.png";
 
     ```fs
 
-    open Fable.Nib.Assertion
+    open Scriptorium.Nib.Assertion
 
-    open type Fable.Quill.Test
-    open type Fable.Quill.Runner
+    open type Scriptorium.Quill.Test
+    open type Scriptorium.Quill.Runner
 
     [<EntryPoint>]
     let main _ =

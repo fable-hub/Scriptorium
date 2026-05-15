@@ -12,12 +12,12 @@ module Parchment.Overview
 let itemCount = 0
 
 (**
-`Fable.Parchment` is the structured logging layer for the Scriptorium family. It exposes severity-based logging methods, a composable sink system, and child loggers with automatic prefixes.
+`Scriptorium.Parchment` is the structured logging layer for the Scriptorium family. It exposes severity-based logging methods, a composable sink system, and child loggers with automatic prefixes.
 
 ## Installation
 
 ```sh
-dotnet add package Fable.Parchment
+dotnet add package Scriptorium.Parchment
 ```
 
 ## Usage
@@ -26,8 +26,8 @@ Create a logger with one or more sinks, then call the severity method you need:
 
 *)
 
-open Fable.Parchment
-open Fable.Parchment.Sinks
+open Scriptorium.Parchment
+open Scriptorium.Parchment.Sinks
 
 let logger = Parchment.Create(Universal.console ())
 
