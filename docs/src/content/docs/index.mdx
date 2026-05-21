@@ -15,6 +15,35 @@ hero:
       variant: minimal
 ---
 
+```fsharp
+open Scriptorium.Nib
+open Scriptorium.Quill.Runner
+open type Scriptorium.Quill.Runner.Test
+
+[<EntryPoint>]
+let main _ =
+    runTests [
+        testList "My suite" [
+
+            test("equality", fun () ->
+                assertThat 42 (isEqualTo 42)
+            )
+
+            test("option chain", fun () ->
+                assertThat (Some "hello") (Option.value >> isEqualTo "hello")
+            )
+
+            test("record fields with tags", fun () ->
+                assertThat { Name = "alice"; Age = 25 } (
+                    inside _.Age  (tag "age"  >> isGreaterOrEqual 18)
+                    >> inside _.Name (tag "name" >> isNotEqualTo "")
+                )
+            )
+
+        ]
+    ]
+```
+
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## The Libraries

@@ -13,7 +13,6 @@ F# libraries for building and testing F#/Fable applications.
 | **Scriptorium.Nib.Snapshot** | Snapshot assertions for Nib | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Nib.Snapshot)](https://www.nuget.org/packages/Scriptorium.Nib.Snapshot) |
 | **Scriptorium.Nib.Browser** | Browser tests via Playwright | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Nib.Browser)](https://www.nuget.org/packages/Scriptorium.Nib.Browser) |
 
-
 ## Quick start
 
 ```fsharp
