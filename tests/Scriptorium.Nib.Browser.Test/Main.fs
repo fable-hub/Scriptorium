@@ -16,6 +16,8 @@ let main _ =
     let tests =
         testList (
             "Scriptorium.Nib.Browser",
+            // Set a longer timeout for browser tests since GitHub Actions fails 1 times out of 2 with the default 5s timeout.
+            timeout 10000,
             [
 
                 testPage (
