@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <FablePackageType>library</FablePackageType>
-        <PackageTags>fable-all</PackageTags>
+        <PackageTags>fable-dotnet;fable-javascript</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
