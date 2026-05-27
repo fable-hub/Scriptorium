@@ -5,6 +5,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <FablePackageType>library</FablePackageType>
     <PackageTags>fable-dotnet;fable-javascript</PackageTags>
+    <!--
+      System.Text.Json is part of the shared framework on net10.0 but NOT on
+      netstandard2.1 (our target), so the PackageReference below is required.
+      The SDK emits NU1510 anyway; that warning leaks into Fable's msbuild
+      cracker output and crashes the JS build, so suppress it here.
+    -->
+    <NoWarn>$(NoWarn);NU1510</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
