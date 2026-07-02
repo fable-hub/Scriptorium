@@ -16,7 +16,7 @@ type AutomatedReleaseCommand() =
             let nupkgPath =
                 DotNet.pack (workingDirectory = workingDirectory)
 
-            DotNet.nugetPush nupkgPath
+            DotNet.nugetPush(nupkgPath, skipDuplicate = true)
 
         packAndPush Workspace.src.``Scriptorium.Hedgehog``.``.``
         packAndPush Workspace.src.``Scriptorium.Ink``.``.``
