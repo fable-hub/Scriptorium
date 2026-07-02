@@ -10,9 +10,12 @@
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.5.0, )",
-        "resolved": "4.5.0",
-        "contentHash": "ZcX8XN5sQZGCbrS8VYnsa/ynhrCBfpDyqDkTl33GTXOpgfKibxoq0+W0hCSbRzuukVNoLtqGL/B6+8yTNDXbNA=="
+        "requested": "[5.2.0, )",
+        "resolved": "5.2.0",
+        "contentHash": "3+HVoyYMjPGeKJEhMzRti0coDS6AkLVOWXmGwSvqokeTuwdZLyiKMoNgQrE6ZeJ0cSy9qHBB4VBpw5RAfb6zmQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
       },
       "Fable.Package.SDK": {
         "type": "Direct",
@@ -28,9 +31,9 @@
       },
       "Hedgehog": {
         "type": "Direct",
-        "requested": "[2.0.3, )",
-        "resolved": "2.0.3",
-        "contentHash": "0e2DQpYOJeiOlvk+8aaAcBJgE945TACISm5ngN8SkygGiLg0m1sWYsZkKOphoQLC0A3lMxEdVe2LmNc3WRERsA==",
+        "requested": "[2.0.4, )",
+        "resolved": "2.0.4",
+        "contentHash": "1i9P9indoy02mB3Xf/6FCcr3hy/d9kXh4zzgoUdGaxfP+O8qzSNv5Sn0Latddj7v0i3IyWT9ssj4aS653CY7pw==",
         "dependencies": {
           "FSharp.Core": "8.0.403",
           "TypeShape": "9.0.0"
@@ -48,7 +51,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )"
+          "Fable.Core": "[5.2.0, )"
         }
       },
       "scriptorium.nib": {
@@ -62,7 +65,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )",
+          "Fable.Core": "[5.2.0, )",
           "Scriptorium.Ink": "[1.0.0, )"
         }
       },
@@ -70,7 +73,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )",
+          "Fable.Core": "[5.2.0, )",
           "Scriptorium.Ink": "[1.0.0, )",
           "Scriptorium.Nib": "[1.0.0, )",
           "Scriptorium.Parchment": "[1.0.0, )"

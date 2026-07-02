@@ -22,7 +22,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )"
+          "Fable.Core": "[5.2.0, )"
         }
       },
       "scriptorium.nib": {
@@ -36,7 +36,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )",
+          "Fable.Core": "[5.2.0, )",
           "Fable.Promise": "[3.2.0, )",
           "Glutinum.Types": "[0.1.0, )",
           "Scriptorium.Nib": "[1.0.0, )",
@@ -47,7 +47,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )",
+          "Fable.Core": "[5.2.0, )",
           "Scriptorium.Ink": "[1.0.0, )"
         }
       },
@@ -55,7 +55,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.0.101, )",
-          "Fable.Core": "[4.5.0, )",
+          "Fable.Core": "[5.2.0, )",
           "Scriptorium.Ink": "[1.0.0, )",
           "Scriptorium.Nib": "[1.0.0, )",
           "Scriptorium.Parchment": "[1.0.0, )"
@@ -63,9 +63,12 @@
       },
       "Fable.Core": {
         "type": "CentralTransitive",
-        "requested": "[4.5.0, )",
-        "resolved": "4.5.0",
-        "contentHash": "ZcX8XN5sQZGCbrS8VYnsa/ynhrCBfpDyqDkTl33GTXOpgfKibxoq0+W0hCSbRzuukVNoLtqGL/B6+8yTNDXbNA=="
+        "requested": "[5.2.0, )",
+        "resolved": "5.2.0",
+        "contentHash": "3+HVoyYMjPGeKJEhMzRti0coDS6AkLVOWXmGwSvqokeTuwdZLyiKMoNgQrE6ZeJ0cSy9qHBB4VBpw5RAfb6zmQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
       },
       "Glutinum.Types": {
         "type": "CentralTransitive",
