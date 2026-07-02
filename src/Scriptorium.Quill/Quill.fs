@@ -81,7 +81,7 @@ module internal Advanced =
     let jsClearTimeout (id: obj) : unit = jsNative
 
     let withTimeout (ms: int) (computation: Async<unit>) : Async<unit> =
-        if Compiler.isJavaScript then
+        if Compiler.isJavaScript || Compiler.isTypeScript then
             Async.FromContinuations(fun (resolve, reject, _cancel) ->
                 let mutable settled = false
                 let mutable timerId: obj = null
@@ -290,12 +290,12 @@ module internal Advanced =
 
     /// Raw write without a trailing newline - used for the live dot progress line.
     let writeRaw (s: string) : unit =
-    #if FABLE_COMPILER_JAVASCRIPT
+    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsStatement
             s
             "(typeof process !== 'undefined' && process.stdout) ? process.stdout.write($0) : console.log($0)"
     #endif
-    #if !FABLE_COMPILER_JAVASCRIPT
+    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT)
         System.Console.Write(s)
     #endif
 
@@ -384,7 +384,7 @@ module internal Advanced =
     // `Compiler.isX` branch as a warning (or drop it during DCE) instead of a compile error? That
     // would let genuinely-platform-specific blocking calls live behind `Compiler.isX` too.
     let universalRunTests (funcAsync: Async<int>) : int =
-    #if FABLE_COMPILER_JAVASCRIPT
+    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         // StartAsPromise returns Promise<int>. We can't block on JS, so we chain
         // process.exit on the resolved value - the function return value is ignored.
         let promise = Async.StartAsPromise funcAsync
@@ -392,7 +392,7 @@ module internal Advanced =
         0
     #endif
 
-    #if !FABLE_COMPILER_JAVASCRIPT
+    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT)
         Async.RunSynchronously funcAsync
     #endif
 

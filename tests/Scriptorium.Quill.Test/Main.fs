@@ -547,7 +547,8 @@ let main _ =
 
                                     match Prelude.currentPlatform with
                                     | JavaScript -> assertThat (isSkipped results[0]) isTrue
-                                    | DotNet -> assertThat (isPassed results[0]) isTrue
+                                    | DotNet
+                                    | Python -> assertThat (isPassed results[0]) isTrue
                                 }
                         )
 
@@ -565,7 +566,8 @@ let main _ =
 
                                     match Prelude.currentPlatform with
                                     | DotNet -> assertThat (isSkipped results[0]) isTrue
-                                    | JavaScript -> assertThat (isPassed results[0]) isTrue
+                                    | JavaScript
+                                    | Python -> assertThat (isPassed results[0]) isTrue
                                 }
                         )
 

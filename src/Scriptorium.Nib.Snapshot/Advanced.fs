@@ -5,34 +5,44 @@ open Fable.Core.JsInterop
 
 module Advanced =
 
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
     let private fs: obj = importAll "fs"
     let private path: obj = importAll "path"
 #endif
 
     let shouldUpdateSnapshots (config: SnapshotConfig) : bool =
         let envVar = config.UpdateEnvironmentVariable
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsExpr envVar "!!process.env[$0]"
-#else
+#endif
+#if FABLE_COMPILER_PYTHON
+        Fable.Core.PyInterop.emitPyExpr envVar "bool(__import__('os').environ.get($0))"
+#endif
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
         System.Environment.GetEnvironmentVariable(envVar)
         |> System.String.IsNullOrEmpty
         |> not
 #endif
 
     let snapshotFilePath (config: SnapshotConfig) (testFilePath: string) : string =
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         let dir = path?dirname (testFilePath)
         let baseName = path?basename (testFilePath)
         path?join (dir, config.DirectoryName, baseName + config.Extension)
-#else
+#endif
+#if FABLE_COMPILER_PYTHON
+        let dir: string = Fable.Core.PyInterop.emitPyExpr testFilePath "__import__('os').path.dirname($0)"
+        let baseName: string = Fable.Core.PyInterop.emitPyExpr testFilePath "__import__('os').path.basename($0)"
+        dir + "/" + config.DirectoryName + "/" + baseName + config.Extension
+#endif
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
         let dir = System.IO.Path.GetDirectoryName(testFilePath)
         let fileName = System.IO.Path.GetFileName(testFilePath) + config.Extension
         System.IO.Path.Combine(dir, config.DirectoryName, fileName)
 #endif
 
     let readFile (pathStr: string) : string option =
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         try
             fs?readFileSync (pathStr, "utf8") |> Some
         with _ ->
@@ -45,7 +55,7 @@ module Advanced =
 #endif
 
     let writeFile (pathStr: string) (content: string) : unit =
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         let dir = path?dirname (pathStr)
 
         if not (fs?existsSync (dir)) then
@@ -57,7 +67,13 @@ module Advanced =
             )
 
         fs?writeFileSync (pathStr, content, "utf8")
-#else
+#endif
+#if FABLE_COMPILER_PYTHON
+        let dir: string = Fable.Core.PyInterop.emitPyExpr pathStr "__import__('os').path.dirname($0)"
+        Fable.Core.PyInterop.emitPyStatement dir "__import__('os').makedirs($0, exist_ok=True)"
+        System.IO.File.WriteAllText(pathStr, content)
+#endif
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
         let dir = System.IO.Path.GetDirectoryName(pathStr)
 
         if not (System.IO.Directory.Exists(dir)) then
@@ -67,9 +83,19 @@ module Advanced =
 #endif
 
     let defaultSerialize (value: 'a) : string =
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsExpr value "JSON.stringify($0, null, 2)"
-#else
+#endif
+#if FABLE_COMPILER_PYTHON
+        // System.Text.Json is not supported by fable-library-python, so serialize with the json
+        // module. The `default` handler unwraps Fable's numeric wrappers (int32, ...) to plain
+        // numbers and record objects (whether __dict__- or __slots__-based) to their fields, so the
+        // output matches the JS `JSON.stringify` snapshots.
+        Fable.Core.PyInterop.emitPyExpr
+            value
+            "__import__('json').dumps($0, indent=2, sort_keys=True, default=lambda o: int(o) if hasattr(o, '__int__') and not isinstance(o, (bool, int)) else (vars(o) if hasattr(o, '__dict__') else {s: getattr(o, s) for s in getattr(type(o), '__slots__', ())}))"
+#endif
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
         let options = System.Text.Json.JsonSerializerOptions(WriteIndented = true)
         System.Text.Json.JsonSerializer.Serialize(value, options)
 #endif

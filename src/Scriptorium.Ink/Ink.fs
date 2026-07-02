@@ -10,13 +10,17 @@ open Fable.Core.JsInterop
 /// Colors are disabled when the NO_COLOR environment variable is set,
 /// following the no-color.org convention.
 let private colorsEnabled: bool =
-#if FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
     emitJsExpr
         ()
         "!((typeof process !== 'undefined' && process.env['NO_COLOR'] != null) || typeof NO_COLOR !== 'undefined')"
 #endif
 
-#if !FABLE_COMPILER_JAVASCRIPT
+#if FABLE_COMPILER_PYTHON
+    Fable.Core.PyInterop.emitPyExpr () "__import__('os').environ.get('NO_COLOR') is None"
+#endif
+
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
     System.Environment.GetEnvironmentVariable("NO_COLOR") |> isNull
 #endif
 

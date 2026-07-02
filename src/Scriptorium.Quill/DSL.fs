@@ -31,6 +31,14 @@ module Configurers =
         else
             config
 
+    let skipIfPython (config: TestConfig) : TestConfig =
+        if currentPlatform = Python then
+            { config with
+                Skip = true
+            }
+        else
+            config
+
     let timeout (ms: int) (config: TestConfig) : TestConfig =
         { config with
             TimeoutMs = Some ms

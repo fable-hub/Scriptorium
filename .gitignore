@@ -35,3 +35,10 @@ bin/
 docs/src/content/docs/.gitignore
 
 .sisyphus/
+
+# Python venv for Fable tests
+.venv/
+
+# Fable TS/Python test output (kept out of obj/)
+ts-build/
+py-build/

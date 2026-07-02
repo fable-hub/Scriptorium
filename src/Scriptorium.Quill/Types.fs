@@ -3,6 +3,7 @@ namespace Scriptorium.Quill
 type TargetPlatform =
     | JavaScript
     | DotNet
+    | Python
 
 type TestConfig =
     {

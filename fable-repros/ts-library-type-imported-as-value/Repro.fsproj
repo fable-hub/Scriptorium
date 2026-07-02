@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><Compile Include="Repro.fs" /></ItemGroup>
+  <ItemGroup><PackageReference Include="Fable.Core" Version="5.2.0" /></ItemGroup>
+</Project>

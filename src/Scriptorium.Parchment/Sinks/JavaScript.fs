@@ -4,6 +4,9 @@ open Fable.Core.JS
 open Fable.Core.JsInterop
 open Scriptorium.Parchment
 
+// This module emits raw JavaScript (console API), which the Python target cannot compile, so it is
+// excluded there. It stays available on .NET for source compatibility (as before).
+#if !FABLE_COMPILER_PYTHON
 /// <summary>
 /// Sinks that rely on JavaScript-specific APIs.
 /// </summary>
@@ -26,3 +29,4 @@ module JavaScript =
             | Severity.Info
             | Severity.Verbose
             | Severity.Silly -> console.log(msg)
+#endif
