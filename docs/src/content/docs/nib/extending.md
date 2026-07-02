@@ -5,7 +5,7 @@ description: How to extend Scriptorium.Nib with custom assertions and new assert
 
 `Scriptorium.Nib` is built around a single, small abstraction: the `Assertion<'a, 'b>` type.
 
-Everything else — the built-in assertions, the combinators, and the packages that extend Nib — is built on top of it.
+Everything else - the built-in assertions, the combinators, and the packages that extend Nib - is built on top of it.
 
 ## The core abstraction
 
@@ -112,4 +112,4 @@ test("user profile", fun t ->
 | Custom combinators | Manipulate `AssertionState` directly | `inside`, `focus`, `tag` |
 | Nicer integration with `TestContext` | Extend `TestContext` with instance members | `t.snapshot data` |
 
-The key insight is that `AssertionState` is public and unconstrained. You can read from it, write to it, and transform it however you need — as long as you respect the invariant that errors accumulate and `Stopped` short-circuits subsequent work.
+The key insight is that `AssertionState` is public and unconstrained. You can read from it, write to it, and transform it however you need - as long as you respect the invariant that errors accumulate and `Stopped` short-circuits subsequent work.

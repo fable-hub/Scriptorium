@@ -36,7 +36,7 @@ testList ("integration tests", skipIfJavaScript, [
 ])
 ```
 
-### `xtestList` — pending list
+### `xtestList` - pending list
 
 All children are marked as pending, regardless of their individual marks. Their bodies never execute.
 
@@ -47,7 +47,7 @@ xtestList ("WIP features", [
 ])
 ```
 
-### `ftestList` — focused list
+### `ftestList` - focused list
 
 All children run as focused tests. Sibling tests and lists outside this list are skipped.
 
@@ -95,7 +95,7 @@ test ("platform only", skipIfJavaScript, fun _ ->
 )
 ```
 
-### `xtest` — pending
+### `xtest` - pending
 
 A pending test. The body is **never executed**. The test appears in output as `*` (yellow).
 
@@ -105,7 +105,7 @@ xtest ("not implemented yet", fun _ ->
 )
 ```
 
-### `ftest` — focused
+### `ftest` - focused
 
 A focused test. When any focused test is present, all non-focused tests produce `Skipped` results.
 
@@ -138,7 +138,7 @@ testAsync ("simple async", async {
 })
 ```
 
-### `xtestAsync` — pending async
+### `xtestAsync` - pending async
 
 Marks an async test as pending. The body never executes.
 
@@ -148,7 +148,7 @@ xtestAsync ("pending feature", async {
 })
 ```
 
-### `ftestAsync` — focused async
+### `ftestAsync` - focused async
 
 Focuses an async test.
 

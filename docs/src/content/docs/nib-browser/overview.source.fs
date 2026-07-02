@@ -55,7 +55,7 @@ let myAssertion: DomAssertion<Locator> =
 
 (**
 
-## `assertLocator` — the entry point
+## `assertLocator` - the entry point
 
 Runs a `DomAssertion` chain against a locator. Rejects the promise if any assertion fails.
 

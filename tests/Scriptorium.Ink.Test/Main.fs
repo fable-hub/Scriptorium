@@ -157,7 +157,7 @@ let private nesting =
         "nesting",
         [
             // Style wrapping colour: the style's targeted close leaves the fg/bg reset
-            // to the inner colour function — outer style survives.
+            // to the inner colour function - outer style survives.
             test (
                 "style wrapping fg color",
                 fun _ ->
@@ -209,7 +209,7 @@ let private nesting =
             )
 
             // fg-inside-fg: ANSI has no colour stack. The inner \x1b[39m resets the
-            // foreground to default — the outer red is gone for the trailing text.
+            // foreground to default - the outer red is gone for the trailing text.
             // "should still be red" is NOT red.
             test (
                 "fg color wrapping fg color: inner close resets outer",

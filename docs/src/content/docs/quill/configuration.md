@@ -26,7 +26,7 @@ type TestConfig =
 | `TimeoutMs` | `Some 5000` | Maximum allowed duration in ms. `None` = no timeout |
 | `SlowThresholdMs` | `300` | Tests slower than this show their time in yellow |
 
-You never construct `TestConfig` directly — use the built-in configurers and compose them with `>>`.
+You never construct `TestConfig` directly - use the built-in configurers and compose them with `>>`.
 
 ## Built-in configurers
 
@@ -150,11 +150,11 @@ testConfig = testConfigurer (listConfigurer (globalConfig))
 ```fsharp
 Runner.runTestsWith(timeout 5000, [    // global: 5s
     testList ("group", timeout 2000, [ // list overrides: 2s
-        testAsync ("fast", fun _ -> async { do! Async.Sleep 100 })  // inherits 2s — passes
-        testAsync ("slow", timeout 10000, fun _ -> async {          // test overrides: 10s — passes
+        testAsync ("fast", fun _ -> async { do! Async.Sleep 100 })  // inherits 2s - passes
+        testAsync ("slow", timeout 10000, fun _ -> async {          // test overrides: 10s - passes
             do! Async.Sleep 5000
         })
-        testAsync ("too slow", fun _ -> async {  // inherits 2s — fails after 2s
+        testAsync ("too slow", fun _ -> async {  // inherits 2s - fails after 2s
             do! Async.Sleep 3000
         })
     ])

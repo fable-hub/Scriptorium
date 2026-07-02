@@ -48,7 +48,7 @@ let private wrapStyle (openCode: string) (closeCode: string) (s: string) =
     $"%s{ESC}%s{openCode}m%s{s}%s{ESC}%s{closeCode}m"
 
 // ---------------------------------------------------------------------------
-// Colours — foreground
+// Colours - foreground
 // ---------------------------------------------------------------------------
 
 let black (s: string) = wrapFgColor "30" s
@@ -72,7 +72,7 @@ let cyanBright (s: string) = wrapFgColor "96" s
 let whiteBright (s: string) = wrapFgColor "97" s
 
 // ---------------------------------------------------------------------------
-// Colours — background
+// Colours - background
 // ---------------------------------------------------------------------------
 
 let bgBlack (s: string) = wrapBgColor "40" s

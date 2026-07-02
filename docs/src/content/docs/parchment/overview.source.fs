@@ -78,7 +78,7 @@ cache.warning "cache miss" // → [cache] cache miss
 
 (**
 
-Children can be nested — prefixes are concatenated in order:
+Children can be nested - prefixes are concatenated in order:
 
 *)
 

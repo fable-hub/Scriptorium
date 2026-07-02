@@ -628,7 +628,7 @@ let main _ =
                     "not' / not_",
                     [
 
-                        // Playwright assertions all use retry logic — they wait up to the
+                        // Playwright assertions all use retry logic - they wait up to the
                         // configured timeout before giving up. A `not'` test that relies on
                         // a Playwright assertion failing would stall for the full timeout.
                         // We use a locally defined `alwaysFail` that returns an error state

@@ -57,12 +57,12 @@ module Assertion =
             }
 
     // ---------------------------------------------------------------------------
-    // assertThat — runs the chain and throws on any failure
+    // assertThat - runs the chain and throws on any failure
     // ---------------------------------------------------------------------------
 
     /// <summary>Runs an assertion chain against the given subject.</summary>
     /// <remarks>
-    /// All failures in the chain are collected before throwing — a single run
+    /// All failures in the chain are collected before throwing - a single run
     /// always reports every failing assertion, not just the first one.
     /// Throws <c>exn</c> with all error messages joined by newlines.
     /// </remarks>
@@ -173,7 +173,7 @@ module Assertion =
                 result
 
     /// <summary>
-    /// Inverts an assertion — passes when <c>inner</c> fails, fails when <c>inner</c> passes.
+    /// Inverts an assertion - passes when <c>inner</c> fails, fails when <c>inner</c> passes.
     /// </summary>
     /// <remarks>
     /// Runs <c>inner</c> against a clean error slate. If <c>inner</c> accumulated no errors
@@ -196,7 +196,7 @@ module Assertion =
                 else
                     state
 
-    /// Alias for <c>not'</c> — use when the apostrophe is inconvenient in a pipeline.
+    /// Alias for <c>not'</c> - use when the apostrophe is inconvenient in a pipeline.
     let not_ = not'
 
     // ---------------------------------------------------------------------------

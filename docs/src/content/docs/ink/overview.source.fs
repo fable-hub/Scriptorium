@@ -12,7 +12,7 @@ module Ink.Overview
 import { Image } from "astro:assets";
 import demoImage from "./assets/demo.png";
 
-`Scriptorium.Ink` is the colour and style layer for the Scriptorium family. It wraps ANSI escape codes into a small set of composable functions — no dependencies, no configuration required.
+`Scriptorium.Ink` is the colour and style layer for the Scriptorium family. It wraps ANSI escape codes into a small set of composable functions - no dependencies, no configuration required.
 
 ## Installation
 
@@ -39,7 +39,7 @@ green "I am successful" |> log
 // Inline in a format string
 log $"""The task %s{bold "do the laundry"} was %s{green "successful"} and took %s{dim "5min"}"""
 
-// Nested — outer style survives the inner colour reset
+// Nested - outer style survives the inner colour reset
 underline $"""Hello I am {red "red"} while the whole text is underlined"""
 |> log
 

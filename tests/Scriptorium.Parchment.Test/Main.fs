@@ -202,7 +202,7 @@ let main _ =
                     [
 
                         test (
-                            "default level is Info — Verbose/Debug/Silly are filtered",
+                            "default level is Info - Verbose/Debug/Silly are filtered",
                             fun _ ->
                                 let sink, read = captureSink ()
                                 let logger = Parchment.Create(sink)

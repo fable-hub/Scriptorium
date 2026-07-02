@@ -50,7 +50,7 @@ module private Internal =
     /// Creates a headless Chromium browser and page, runs f, then closes both.
     let withPage (f: Page -> Promise<unit>) : Async<unit> = run true f
 
-    /// Like withPage but opens a visible browser window — useful for debugging.
+    /// Like withPage but opens a visible browser window - useful for debugging.
     let withHeadedPage (f: Page -> Promise<unit>) : Async<unit> = run false f
 
 

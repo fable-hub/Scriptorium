@@ -3,7 +3,7 @@ title: Configuration
 description: SnapshotConfig fields, defaults, and CI behaviour.
 ---
 
-`Scriptorium.Nib.Snapshot` behaviour is controlled by `SnapshotConfig` — a plain record with sensible defaults.
+`Scriptorium.Nib.Snapshot` behaviour is controlled by `SnapshotConfig` - a plain record with sensible defaults.
 
 ## Fields
 

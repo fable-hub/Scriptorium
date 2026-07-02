@@ -22,7 +22,7 @@ open Scriptorium.Nib.Assertion
 ```fsharp
 assertThat 42    (isEqualTo 42)
 assertThat 42    (isGreaterThan 0 >> isLessThan 100)
-assertThat 18    (isGreaterOrEqual 18)   // boundary — passes
+assertThat 18    (isGreaterOrEqual 18)   // boundary - passes
 assertThat "hi"  (satisfy (fun s -> s.Length > 0))
 ```
 

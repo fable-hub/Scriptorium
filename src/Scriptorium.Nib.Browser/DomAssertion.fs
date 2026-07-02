@@ -8,7 +8,7 @@ open Glutinum.Playwright
 open type Glutinum.Playwright.Exports
 
 // ---------------------------------------------------------------------------
-// Async assertion type — mirrors Scriptorium.Nib's Assertion<'a, 'b> but with Promise
+// Async assertion type - mirrors Scriptorium.Nib's Assertion<'a, 'b> but with Promise
 // ---------------------------------------------------------------------------
 
 type DomAssertion<'a, 'b> = AssertionState<'a> -> Promise<AssertionState<'b>>
@@ -56,7 +56,7 @@ module DomAssertionOps =
 module DomAssertionCombinators =
 
     /// <summary>
-    /// Inverts a DomAssertion — passes when <c>inner</c> fails, fails when <c>inner</c> passes.
+    /// Inverts a DomAssertion - passes when <c>inner</c> fails, fails when <c>inner</c> passes.
     /// </summary>
     /// <remarks>
     /// Runs <c>inner</c> against a clean error slate. If <c>inner</c> accumulated no errors
@@ -80,7 +80,7 @@ module DomAssertionCombinators =
                         return state
                 }
 
-    /// Alias for <c>not'</c> — use when the apostrophe is inconvenient in a pipeline.
+    /// Alias for <c>not'</c> - use when the apostrophe is inconvenient in a pipeline.
     let not_ = not'
 
 // ---------------------------------------------------------------------------

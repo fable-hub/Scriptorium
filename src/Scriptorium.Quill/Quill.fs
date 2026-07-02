@@ -169,7 +169,7 @@ module internal Advanced =
                     report (TestResult.Pending currentPath)
                 // Runtime skip: either the configurer set Skip = true (e.g. skipIf),
                 // or focus mode is active and this test is not focused nor under a
-                // focused ancestor — so it is sidelined for this run.
+                // focused ancestor - so it is sidelined for this run.
                 elif
                     effectiveConfig.Skip
                     || (anyFocused && not focusedAncestor && def.Mark = TestMark.Normal)
@@ -292,7 +292,7 @@ module internal Advanced =
             return resultLists |> List.ofArray |> List.concat
         }
 
-    /// Raw write without a trailing newline — used for the live dot progress line.
+    /// Raw write without a trailing newline - used for the live dot progress line.
     let writeRaw (s: string) : unit =
     #if FABLE_COMPILER_JAVASCRIPT
         emitJsStatement
@@ -375,7 +375,7 @@ module internal Advanced =
     let universalRunTests (funcAsync: Async<int>) : int =
     #if FABLE_COMPILER_JAVASCRIPT
         // StartAsPromise returns Promise<int>. We can't block on JS, so we chain
-        // process.exit on the resolved value — the function return value is ignored.
+        // process.exit on the resolved value - the function return value is ignored.
         let promise = Async.StartAsPromise funcAsync
         emitJsStatement promise "$0.then(exitCode => process.exit(exitCode))"
         0
@@ -395,7 +395,7 @@ type Runner =
         let duplicates = findDuplicatePaths tests
 
         if not duplicates.IsEmpty then
-            logger.error (red "Duplicate test paths detected — each test must have a unique path.")
+            logger.error (red "Duplicate test paths detected - each test must have a unique path.")
             logger.error (red "The following test(s) share a path with another test:")
             logger.error ""
 
@@ -498,7 +498,7 @@ type Runner =
 
                 if isCI && anyFocused then
                     logger.warning (
-                        red "CI: focused tests detected — ftest/ftestList must not be committed."
+                        red "CI: focused tests detected - ftest/ftestList must not be committed."
                     )
 
                     logger.warning ""

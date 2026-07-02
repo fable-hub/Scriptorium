@@ -27,7 +27,7 @@ type Book =
 
 Combinators are the building blocks that let you navigate into nested values, label failures, short-circuit on critical errors, and invert assertions. They work at the level of the chain itself, not the subject value.
 
-## `assertion` — the primitive building block
+## `assertion` - the primitive building block
 
 Every built-in assertion is defined with this function. Give it a predicate and an error message formatter:
 
@@ -54,7 +54,7 @@ assertThat "alice@example.com" (isNotEqualTo "" >> isValidEmail)
 
 (**
 
-## `inside` — assert on a projected value
+## `inside` - assert on a projected value
 
 Runs an inner chain on a projection of the subject, merges any failures back into the outer chain, then **restores the original subject**. Use this to assert on multiple fields without losing the outer context:
 
@@ -95,9 +95,9 @@ assertThat
 
 (**
 
-## `focus` — change the subject
+## `focus` - change the subject
 
-Projects the current subject into a new value. All subsequent assertions in the chain work on the projected value. The original is discarded — use `inside` if you need to come back to it.
+Projects the current subject into a new value. All subsequent assertions in the chain work on the projected value. The original is discarded - use `inside` if you need to come back to it.
 
 *)
 
@@ -105,9 +105,9 @@ assertThat (fun () -> failwith "boom") (throws >> focus _.Message >> isEqualTo "
 
 (**
 
-## `tag` — label failures
+## `tag` - label failures
 
-Marks all following assertions with a named prefix. Tags nest — `tag "b"` inside a `tag "a"` scope produces `[a.b]`:
+Marks all following assertions with a named prefix. Tags nest - `tag "b"` inside a `tag "a"` scope produces `[a.b]`:
 
 *)
 
@@ -128,7 +128,7 @@ assertThat
 
 (**
 
-## `forceError` — short-circuit on failure
+## `forceError` - short-circuit on failure
 
 Wraps an assertion so that if it fails, the rest of the chain is aborted. Use this when subsequent assertions would crash or be meaningless if the guarded one fails:
 
@@ -143,7 +143,7 @@ let expectedHead = 0
 
 assertThat
     myList
-    (forceError isNotEmpty // abort if empty — List.head would crash
+    (forceError isNotEmpty // abort if empty - List.head would crash
      >> focus List.head
      >> isEqualTo expectedHead)
 
@@ -151,7 +151,7 @@ assertThat
 
 `Option.value`, `Result.okValue`, and `DU.ofCase` all use `forceError` internally for the same reason.
 
-## `not'` — invert an assertion
+## `not'` - invert an assertion
 
 Passes when the inner assertion fails, fails when it passes:
 
@@ -166,7 +166,7 @@ assertThat 1 (not' (isEqualTo 1))
 
 `not_` is an alias when the apostrophe is inconvenient in a pipeline.
 
-## `DU.ofCase` — discriminated union assertions
+## `DU.ofCase` - discriminated union assertions
 
 Checks a DU case and extracts its payload as the new subject. Aborts the chain if the case does not match.
 

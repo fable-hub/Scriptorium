@@ -49,7 +49,7 @@ let main _ =
     ]
 ```
 
-## Debug mode — `dtestPage`
+## Debug mode - `dtestPage`
 
 `BrowserTest.dtestPage` opens a **visible** browser window, pauses before running the body (so you can inspect the initial state), sets no timeout, and marks the test as focused. Use it while writing or debugging a test, then switch back to `testPage` before committing.
 
@@ -57,14 +57,14 @@ let main _ =
 BrowserTest.dtestPage ("debug login flow", fun page ->
     promise {
         do! page.goto "http://localhost:3000/login"
-        // Playwright Inspector opens here — step through manually
+        // Playwright Inspector opens here - step through manually
         do! assertLocator (page.locator "button") toBeVisible
     }
 )
 ```
 
 :::caution[Never commit dtestPage]
-`dtestPage` marks the test as `ftest` (focused). On CI, `Scriptorium.Quill` will detect focused tests and exit with code 1 — preventing the build from passing.
+`dtestPage` marks the test as `ftest` (focused). On CI, `Scriptorium.Quill` will detect focused tests and exit with code 1 - preventing the build from passing.
 :::
 
 ## User events

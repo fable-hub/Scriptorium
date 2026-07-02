@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: Snapshot testing for Scriptorium.Nib — lock in serialised output and catch regressions automatically.
+description: Snapshot testing for Scriptorium.Nib - lock in serialised output and catch regressions automatically.
 ---
 
 `Scriptorium.Nib.Snapshot` adds snapshot testing on top of `Scriptorium.Nib`. On first run the snapshot is written to disk; on every subsequent run the value is serialised and compared against the stored file.
@@ -13,15 +13,15 @@ dotnet add package Scriptorium.Nib.Snapshot
 
 ## How it works
 
-1. **First run** — no snapshot exists yet, it is written and the test passes.
-2. **Subsequent runs** — the value is serialised and diffed against the stored snapshot.
-3. **Updating** — set `UPDATE_SNAPSHOTS=1` and run the tests. All snapshots are rewritten.
+1. **First run** - no snapshot exists yet, it is written and the test passes.
+2. **Subsequent runs** - the value is serialised and diffed against the stored snapshot.
+3. **Updating** - set `UPDATE_SNAPSHOTS=1` and run the tests. All snapshots are rewritten.
 
 Snapshot files live in a `__snapshots__` directory next to the test file with a `.snap` extension.
 
 ## Usage with Scriptorium.Quill
 
-The recommended approach is `ctx.snapshot` — it uses the full test path as the snapshot name automatically, so snapshot names are always unique and renaming a test is enough to regenerate its snapshot:
+The recommended approach is `ctx.snapshot` - it uses the full test path as the snapshot name automatically, so snapshot names are always unique and renaming a test is enough to regenerate its snapshot:
 
 ```fsharp
 test ("user record", fun t ->

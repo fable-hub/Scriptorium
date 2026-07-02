@@ -1,7 +1,7 @@
 (**
 ---
 title: Overview
-description: Composable fluent assertions for F# and Fable — no runner dependency.
+description: Composable fluent assertions for F# and Fable - no runner dependency.
 ---
 *)
 
@@ -13,7 +13,7 @@ module Nib.Overview
 
 `Scriptorium.Nib` is the assertion layer for the Scriptorium family.
 
-It works with any F# framework — or directly in application code.
+It works with any F# framework - or directly in application code.
 
 ## Installation
 
@@ -55,7 +55,7 @@ assertThat 42 (isGreaterThan 0 >> isLessThan 100 >> isNotEqualTo 99)
 
 (**
 
-Every assertion in the chain runs — failures are collected and reported together rather than stopping on the first one.
+Every assertion in the chain runs - failures are collected and reported together rather than stopping on the first one.
 
 ### Nested assertions
 
