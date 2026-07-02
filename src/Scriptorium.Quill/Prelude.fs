@@ -36,13 +36,10 @@ module Prelude =
     #endif
 
     let currentPlatform: TargetPlatform =
-    #if FABLE_COMPILER_JAVASCRIPT
-        JavaScript
-    #endif
-
-    #if !FABLE_COMPILER_JAVASCRIPT
-        DotNet
-    #endif
+        if Compiler.isJavaScript then
+            JavaScript
+        else
+            DotNet
 
     let isCI: bool =
     #if FABLE_COMPILER_JAVASCRIPT

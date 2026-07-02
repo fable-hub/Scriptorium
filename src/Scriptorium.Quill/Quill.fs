@@ -74,7 +74,6 @@ module internal Advanced =
     ///   • .NET – delegates to `Async.StartChild(computation, ms)` which is
     ///     correct and well-tested on the CLR.
 
-    #if FABLE_COMPILER_JAVASCRIPT
     [<Emit("setTimeout($0, $1)")>]
     let jsSetTimeout (callback: unit -> unit) (ms: int) : obj = jsNative
 
@@ -82,47 +81,44 @@ module internal Advanced =
     let jsClearTimeout (id: obj) : unit = jsNative
 
     let withTimeout (ms: int) (computation: Async<unit>) : Async<unit> =
-        Async.FromContinuations(fun (resolve, reject, _cancel) ->
-            let mutable settled = false
-            let mutable timerId: obj = null
+        if Compiler.isJavaScript then
+            Async.FromContinuations(fun (resolve, reject, _cancel) ->
+                let mutable settled = false
+                let mutable timerId: obj = null
 
-            let settle f =
-                if not settled then
-                    settled <- true
-                    jsClearTimeout timerId
-                    f ()
+                let settle f =
+                    if not settled then
+                        settled <- true
+                        jsClearTimeout timerId
+                        f ()
 
-            // Set the timer before starting the computation so timerId is always
-            // assigned by the time settle() could be called from the async side.
-            timerId <-
-                jsSetTimeout
-                    (fun () ->
-                        settle (fun () ->
-                            reject (System.TimeoutException($"Test timed out after {ms}ms"))
+                // Set the timer before starting the computation so timerId is always
+                // assigned by the time settle() could be called from the async side.
+                timerId <-
+                    jsSetTimeout
+                        (fun () ->
+                            settle (fun () ->
+                                reject (System.TimeoutException($"Test timed out after {ms}ms"))
+                            )
                         )
-                    )
-                    ms
+                        ms
 
-            // Start the real computation.
-            Async.StartImmediate(
-                async {
-                    try
-                        do! computation
-                        settle (fun () -> resolve ())
-                    with ex ->
-                        settle (fun () -> reject ex)
-                }
+                // Start the real computation.
+                Async.StartImmediate(
+                    async {
+                        try
+                            do! computation
+                            settle (fun () -> resolve ())
+                        with ex ->
+                            settle (fun () -> reject ex)
+                    }
+                )
             )
-        )
-    #endif
-
-    #if !FABLE_COMPILER_JAVASCRIPT
-    let withTimeout (ms: int) (computation: Async<unit>) : Async<unit> =
-        async {
-            let! timeoutable = Async.StartChild(computation, ms)
-            do! timeoutable
-        }
-    #endif
+        else
+            async {
+                let! timeoutable = Async.StartChild(computation, ms)
+                do! timeoutable
+            }
 
     let runSequentially (asyncs: Async<'a list> list) : Async<'a list> =
         async {
@@ -372,6 +368,21 @@ module internal Advanced =
             []
         |> ignore
 
+    // NOTE: Unlike the other platform splits in Scriptorium, this one CANNOT be expressed with
+    // `Compiler.isJavaScript`/`isDotnet` and must stay a `#if` directive.
+    //
+    // `Compiler.isX` folds to a compile-time constant and Fable dead-code-eliminates the untaken
+    // branch, but the F# type-checker still elaborates BOTH branches and Fable still translates
+    // them before DCE. So a branch is only legal when its APIs exist on every target. The .NET
+    // branch here is `Async.RunSynchronously`, which is fundamentally unavailable under Fable (JS
+    // has no blocking primitive) - Fable emits a hard error even though the branch is dead on JS:
+    //     error FABLE: FSharpAsync.RunSynchronously (static) is not supported by Fable
+    // This differs from e.g. reflection APIs (MakeUnion, Activator.CreateInstance, ...) which DO
+    // have Fable implementations and so migrate cleanly with `Compiler.isDotnet`.
+    //
+    // TODO(fable): forward upstream - could Fable treat an API unsupported only on the *inactive*
+    // `Compiler.isX` branch as a warning (or drop it during DCE) instead of a compile error? That
+    // would let genuinely-platform-specific blocking calls live behind `Compiler.isX` too.
     let universalRunTests (funcAsync: Async<int>) : int =
     #if FABLE_COMPILER_JAVASCRIPT
         // StartAsPromise returns Promise<int>. We can't block on JS, so we chain

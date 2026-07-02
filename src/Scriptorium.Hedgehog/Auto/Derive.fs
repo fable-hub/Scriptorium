@@ -2,6 +2,7 @@ namespace Scriptorium.Hedgehog
 
 open System
 open FSharp.Reflection
+open Fable.Core
 open Hedgehog
 open Hedgehog.FSharp
 
@@ -37,37 +38,37 @@ module Derive =
 
     // -- Reflective value construction ----------------------------------------
 
-#if FABLE_COMPILER
-    let private makeTypedList (_elementType: Type) (values: obj list) : obj =
-        // Generics are erased under Fable, so the `obj list` already *is* a valid `'t list` at
-        // runtime - no reflective cons/nil rebuild (F# list isn't a reflectable union there).
-        box values
-#else
     let private makeTypedList (elementType: Type) (values: obj list) : obj =
-        let listType = listDef.MakeGenericType [| elementType |]
-        let cases = FSharpType.GetUnionCases listType
-        let emptyCase = cases |> Array.find (fun c -> c.GetFields().Length = 0)
-        let consCase = cases |> Array.find (fun c -> c.GetFields().Length = 2)
-        let nil = FSharpValue.MakeUnion(emptyCase, [||])
+        if Compiler.isDotnet then
+            let listType = listDef.MakeGenericType [| elementType |]
+            let cases = FSharpType.GetUnionCases listType
+            let emptyCase = cases |> Array.find (fun c -> c.GetFields().Length = 0)
+            let consCase = cases |> Array.find (fun c -> c.GetFields().Length = 2)
+            let nil = FSharpValue.MakeUnion(emptyCase, [||])
 
-        List.foldBack
-            (fun x acc ->
-                FSharpValue.MakeUnion(
-                    consCase,
-                    [|
-                        x
-                        acc
-                    |]
+            List.foldBack
+                (fun x acc ->
+                    FSharpValue.MakeUnion(
+                        consCase,
+                        [|
+                            x
+                            acc
+                        |]
+                    )
                 )
-            )
-            values
-            nil
-#endif
+                values
+                nil
+        else
+            // Generics are erased under Fable, so the `obj list` already *is* a valid `'t list` at
+            // runtime - no reflective cons/nil rebuild (F# list isn't a reflectable union there).
+            box values
 
 #if FABLE_COMPILER
     let private makeTypedArray (_elementType: Type) (values: obj list) : obj =
         // Generics are erased under Fable, so a plain JS array of the boxed values already *is*
         // the typed array - no reflective element-typed allocation is needed (or supported).
+        // `Array.CreateInstance`/`SetValue` are not supported by Fable, so this branch stays a
+        // compiler directive rather than a `Compiler.isDotnet` runtime check.
         box (List.toArray values)
 #else
     let private makeTypedArray (elementType: Type) (values: obj list) : obj =
@@ -76,41 +77,40 @@ module Derive =
         box arr
 #endif
 
-#if FABLE_COMPILER
-    // obj carries no `comparison` constraint, but Fable erases generics and compares structurally
-    // at runtime, so we borrow an arbitrary comparable witness type to satisfy the type-checker.
-    // The cast must be applied to the WHOLE list (a reference value -> a genuine identity coercion
-    // under Fable). A per-element `unbox<int>` would int-coerce any non-numeric value to 0 (a union
-    // case object becomes `0`, etc.), silently corrupting Set/Map of user types. With the list-level
-    // cast the element values are untouched and Fable's structural comparer keys the Set/Map by the
-    // real values.
-    let private makeTypedSet (_elementType: Type) (values: obj list) : obj =
-        (box values |> unbox<int list>) |> Set.ofList |> box
-
-    let private makeTypedMap (_keyType: Type) (_valueType: Type) (pairs: obj list) : obj =
-        (box pairs |> unbox<(int * obj) list>) |> Map.ofList |> box
-#else
     let private makeTypedSet (elementType: Type) (values: obj list) : obj =
-        let setType = setDef.MakeGenericType [| elementType |]
-        Activator.CreateInstance(setType, [| makeTypedList elementType values |])
+        if Compiler.isDotnet then
+            let setType = setDef.MakeGenericType [| elementType |]
+            Activator.CreateInstance(setType, [| makeTypedList elementType values |])
+        else
+            // obj carries no `comparison` constraint, but Fable erases generics and compares
+            // structurally at runtime, so we borrow an arbitrary comparable witness type to satisfy
+            // the type-checker. The cast must be applied to the WHOLE list (a reference value -> a
+            // genuine identity coercion under Fable). A per-element `unbox<int>` would int-coerce any
+            // non-numeric value to 0 (a union case object becomes `0`, etc.), silently corrupting
+            // Set/Map of user types. With the list-level cast the element values are untouched and
+            // Fable's structural comparer keys the Set/Map by the real values.
+            (box values |> unbox<int list>) |> Set.ofList |> box
 
     let private makeTypedMap (keyType: Type) (valueType: Type) (pairs: obj list) : obj =
-        let tupleType =
-            FSharpType.MakeTupleType
-                [|
-                    keyType
-                    valueType
-                |]
+        if Compiler.isDotnet then
+            let tupleType =
+                FSharpType.MakeTupleType
+                    [|
+                        keyType
+                        valueType
+                    |]
 
-        let mapType =
-            mapDef.MakeGenericType
-                [|
-                    keyType
-                    valueType
-                |]
+            let mapType =
+                mapDef.MakeGenericType
+                    [|
+                        keyType
+                        valueType
+                    |]
 
-        Activator.CreateInstance(mapType, [| makeTypedList tupleType pairs |])
-#endif
+            Activator.CreateInstance(mapType, [| makeTypedList tupleType pairs |])
+        else
+            // See makeTypedSet for why the cast is applied to the whole list.
+            (box pairs |> unbox<(int * obj) list>) |> Map.ofList |> box
 
     let rec private build (config: DeriveConfig) (state: RecursionState) (t: Type) : Gen<obj> =
         let maxDepth = DeriveConfig.recursionDepth config
@@ -140,6 +140,7 @@ module Derive =
         =
         if t = typeof<unit> then
             Gen.constant (box ())
+        // `Type.GetArrayRank` is unsupported by Fable, so the 1-D restriction stays a directive.
 #if FABLE_COMPILER
         elif t.IsArray then
             buildArray config state t
