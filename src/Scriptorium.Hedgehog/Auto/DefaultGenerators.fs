@@ -29,4 +29,4 @@ module internal DefaultGenerators =
         |> GeneratorCollection.add typeof<char> (boxed Gen.alphaNum)
         |> GeneratorCollection.add typeof<string> (boxed (Gen.string (Range.linear 0 50) Gen.alphaNum))
         |> GeneratorCollection.add typeof<Guid> (boxed Gen.guid)
-        |> GeneratorCollection.add typeof<DateTime> (boxed (Gen.dateTime dateTimeRange))
+        |> GeneratorCollection.add typeof<DateTime> (boxed (Gen.dateTime dateTimeRange Gen.dateTimeKind))
