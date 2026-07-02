@@ -18,6 +18,7 @@ type AutomatedReleaseCommand() =
 
             DotNet.nugetPush nupkgPath
 
+        packAndPush Workspace.src.``Scriptorium.Hedgehog``.``.``
         packAndPush Workspace.src.``Scriptorium.Ink``.``.``
         packAndPush Workspace.src.``Scriptorium.Nib``.``.``
         packAndPush Workspace.src.``Scriptorium.Parchment``.``.``

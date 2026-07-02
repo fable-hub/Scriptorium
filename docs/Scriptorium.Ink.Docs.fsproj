@@ -12,6 +12,7 @@
     <Compile Include="src/content/docs/nib/combinators.source.fs" />
     <Compile Include="src/content/docs/nib-browser/overview.source.fs" />
     <Compile Include="src/content/docs/quill/overview.source.fs" />
+    <Compile Include="src/content/docs/hedgehog/overview.source.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
     <ProjectReference Include="../src/Scriptorium.Nib.Browser/Scriptorium.Nib.Browser.fsproj" />
     <ProjectReference Include="../src/Scriptorium.Nib.Snapshot/Scriptorium.Nib.Snapshot.fsproj" />
     <ProjectReference Include="../src/Scriptorium.Quill/Scriptorium.Quill.fsproj" />
+    <ProjectReference Include="../src/Scriptorium.Hedgehog/Scriptorium.Hedgehog.fsproj" />
   </ItemGroup>
 
 </Project>

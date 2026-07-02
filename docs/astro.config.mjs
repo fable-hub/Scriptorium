@@ -14,6 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
     base: '/Scriptorium/',
+    server: { host: true },
     integrations: [
         fsharpLiterate(),
         starlight({
@@ -75,6 +76,12 @@ export default defineConfig({
                         'quill/test-dsl',
                         'quill/configuration',
                         'quill/runner',
+                    ],
+                },
+                {
+                    label: 'Scriptorium.Hedgehog',
+                    items: [
+                        'hedgehog/overview',
                     ],
                 },
                 {

@@ -6,6 +6,7 @@
     <Project Path="docs/Scriptorium.Ink.Docs.fsproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Scriptorium.Hedgehog/Scriptorium.Hedgehog.fsproj" />
     <Project Path="src/Scriptorium.Ink/Scriptorium.Ink.fsproj" />
     <Project Path="src/Scriptorium.Nib.Browser/Scriptorium.Nib.Browser.fsproj" />
     <Project Path="src/Scriptorium.Nib.Snapshot/Scriptorium.Nib.Snapshot.fsproj" />
@@ -14,6 +15,7 @@
     <Project Path="src/Scriptorium.Quill/Scriptorium.Quill.fsproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Scriptorium.Hedgehog.Test/Scriptorium.Hedgehog.Test.fsproj" />
     <Project Path="tests/Scriptorium.Ink.Test/Scriptorium.Ink.Test.fsproj" />
     <Project Path="tests/Scriptorium.Nib.Browser.Test/Scriptorium.Nib.Browser.Test.fsproj" />
     <Project Path="tests/Scriptorium.Nib.Snapshot.Test/Scriptorium.Nib.Snapshot.Test.fsproj" />

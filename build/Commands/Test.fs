@@ -41,6 +41,7 @@ It should be one of the following:
         """
 
 type Project =
+    | Scriptorium_Hedgehog
     | Scriptorium_Ink
     | Scriptorium_Nib
     | Scriptorium_Nib_Browser
@@ -57,6 +58,7 @@ type Project =
     member this.ToArgs =
         match this with
         | AllProject -> "all"
+        | Scriptorium_Hedgehog -> "hedgehog"
         | Scriptorium_Ink -> "ink"
         | Scriptorium_Nib -> "nib"
         | Scriptorium_Nib_Browser -> "nib-browser"
@@ -67,6 +69,7 @@ type Project =
     static member fromString(value: string) =
         match value.ToLowerInvariant() with
         | "all" -> AllProject
+        | "hedgehog" -> Scriptorium_Hedgehog
         | "ink" -> Scriptorium_Ink
         | "nib" -> Scriptorium_Nib
         | "nib-browser" -> Scriptorium_Nib_Browser
@@ -88,6 +91,7 @@ It should be one of the following:
 
     member this.Dir =
         match this with
+        | Scriptorium_Hedgehog -> Workspace.tests.``Scriptorium.Hedgehog.Test``.``.``
         | Scriptorium_Ink -> Workspace.tests.``Scriptorium.Ink.Test``.``.``
         | Scriptorium_Nib -> Workspace.tests.``Scriptorium.Nib.Test``.``.``
         | Scriptorium_Nib_Browser -> Workspace.tests.``Scriptorium.Nib.Browser.Test``.``.``
@@ -98,6 +102,11 @@ It should be one of the following:
 
     member this.SupportedRuntimes =
         match this with
+        | Scriptorium_Hedgehog ->
+            [
+                DotNet
+                JavaScript
+            ]
         | Scriptorium_Ink ->
             [
                 DotNet
@@ -140,6 +149,7 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
     match project with
     | Scriptorium_Nib_Browser ->
         Command.Run("npx", "playwright install chromium", workingDirectory = project.Dir)
+    | Scriptorium_Hedgehog
     | Scriptorium_Ink
     | Scriptorium_Nib
     | Scriptorium_Nib_Snapshot

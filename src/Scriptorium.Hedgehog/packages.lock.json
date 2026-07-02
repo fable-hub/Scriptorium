@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "EasyBuild.PackageReleaseNotes.Tasks": {
+        "type": "Direct",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "1hMVtdIKNfHZA2Zw7L33Y1ZL/3DTK4NSy5gDaNfy2Emp753QxZoqNAPGNxv9MViqfpM62HwEIFZkUW4dCToHVg=="
+      },
+      "Fable.Core": {
+        "type": "Direct",
+        "requested": "[4.5.0, )",
+        "resolved": "4.5.0",
+        "contentHash": "ZcX8XN5sQZGCbrS8VYnsa/ynhrCBfpDyqDkTl33GTXOpgfKibxoq0+W0hCSbRzuukVNoLtqGL/B6+8yTNDXbNA=="
+      },
+      "Fable.Package.SDK": {
+        "type": "Direct",
+        "requested": "[1.3.2, )",
+        "resolved": "1.3.2",
+        "contentHash": "vQB5IvCyy86LP9ilSpZGjLUT/7HI0Bp4Ht1Oyl+w68h734ySaq9xLjttErYoHx+nmnMjcv2EBjxrA24mZ/U/jQ=="
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.0.101, )",
+        "resolved": "10.0.101",
+        "contentHash": "mrS3J7cLtvXM3u3CmiaFq8oyBdlevzZY1VAAAbFk1gUDQtDEjUOybN5XpQglx5wAgJ0wLdDl6OSSfS7ZDFNcpA=="
+      },
+      "Hedgehog": {
+        "type": "Direct",
+        "requested": "[2.0.3, )",
+        "resolved": "2.0.3",
+        "contentHash": "0e2DQpYOJeiOlvk+8aaAcBJgE945TACISm5ngN8SkygGiLg0m1sWYsZkKOphoQLC0A3lMxEdVe2LmNc3WRERsA==",
+        "dependencies": {
+          "FSharp.Core": "8.0.403",
+          "TypeShape": "9.0.0"
+        }
+      },
+      "TypeShape": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "TFBwzUVpnJT8W4UAGNb0uQ+ZtA9wKUOZA9a825DzOZ0ejUFmLKF/QOVhMt6x9d1TsP1TxuUs/aYilKPCnttryg==",
+        "dependencies": {
+          "FSharp.Core": "4.3.2"
+        }
+      },
+      "scriptorium.ink": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.0.101, )",
+          "Fable.Core": "[4.5.0, )"
+        }
+      },
+      "scriptorium.nib": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.0.101, )",
+          "Scriptorium.Ink": "[1.0.0, )"
+        }
+      },
+      "scriptorium.parchment": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.0.101, )",
+          "Fable.Core": "[4.5.0, )",
+          "Scriptorium.Ink": "[1.0.0, )"
+        }
+      },
+      "scriptorium.quill": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.0.101, )",
+          "Fable.Core": "[4.5.0, )",
+          "Scriptorium.Ink": "[1.0.0, )",
+          "Scriptorium.Nib": "[1.0.0, )",
+          "Scriptorium.Parchment": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}

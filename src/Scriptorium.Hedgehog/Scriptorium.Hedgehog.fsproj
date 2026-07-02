@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <FablePackageType>library</FablePackageType>
+    <PackageTags>fable-dotnet;fable-javascript</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Auto/RecursionState.fs" />
+    <Compile Include="Auto/GeneratorCollection.fs" />
+    <Compile Include="Auto/DefaultGenerators.fs" />
+    <Compile Include="Auto/DeriveConfig.fs" />
+    <Compile Include="Auto/Derive.fs" />
+    <Compile Include="DSL.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Scriptorium.Quill\Scriptorium.Quill.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Fable.Core" />
+    <PackageReference Include="Fable.Package.SDK">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Hedgehog" />
+  </ItemGroup>
+
+</Project>
