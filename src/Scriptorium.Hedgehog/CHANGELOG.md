@@ -1,5 +1,5 @@
 ---
-last_commit_released: 386deb28791224301316614f2a38c040cd4a0e99
+last_commit_released: 973600e6e2100bcc6a196b6a21e3bb372897871a
 ---
 
 # Changelog
@@ -11,5 +11,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 This changelog is generated using [EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt).
 
 ⚠ Only edit the front matter metadata at the top of this file. All other changes will be overwritten when a new release is created.
+
+## 0.1.0 - 2026-07-02
+
+### 🚀 Features
+
+* Add Scriptorium.Hedgehog ([9b664fe](https://github.com/fable-hub/Scriptorium/commit/9b664fe8e8e165926bfcabce6a054e80e4c86e2c))
+
+<strong><small>[View changes on Github](https://github.com/fable-hub/Scriptorium/compare/386deb28791224301316614f2a38c040cd4a0e99..973600e6e2100bcc6a196b6a21e3bb372897871a)</small></strong>
 
 ## 0.0.0
