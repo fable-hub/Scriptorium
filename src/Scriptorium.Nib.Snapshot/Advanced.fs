@@ -87,10 +87,9 @@ module Advanced =
         emitJsExpr value "JSON.stringify($0, null, 2)"
 #endif
 #if FABLE_COMPILER_PYTHON
-        // System.Text.Json is not supported by fable-library-python, so serialize with the json
-        // module. The `default` handler unwraps Fable's numeric wrappers (int32, ...) to plain
-        // numbers and record objects (whether __dict__- or __slots__-based) to their fields, so the
-        // output matches the JS `JSON.stringify` snapshots.
+        // System.Text.Json isn't supported by fable-library-python, so serialize with `json`. The
+        // `default` handler unwraps Fable's numeric wrappers (int32, ...) and record objects
+        // (__dict__ or __slots__) to their fields, matching the JS `JSON.stringify` snapshots.
         Fable.Core.PyInterop.emitPyExpr
             value
             "__import__('json').dumps($0, indent=2, sort_keys=True, default=lambda o: int(o) if hasattr(o, '__int__') and not isinstance(o, (bool, int)) else (vars(o) if hasattr(o, '__dict__') else {s: getattr(o, s) for s in getattr(type(o), '__slots__', ())}))"

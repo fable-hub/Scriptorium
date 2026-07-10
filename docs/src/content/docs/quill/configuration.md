@@ -51,7 +51,7 @@ test ("conditional skip", skipIf (System.Runtime.InteropServices.RuntimeInformat
 skipIfJavaScript : TestConfig -> TestConfig
 ```
 
-Skips when compiled to JavaScript (Fable).
+Skips when compiled to JavaScript, including the TypeScript target (it compiles to and runs on the JavaScript runtime).
 
 ```fsharp
 test ("uses .NET DateTime", skipIfJavaScript, fun _ ->
@@ -69,6 +69,20 @@ Skips when running on .NET (i.e. not compiled by Fable).
 
 ```fsharp
 test ("uses browser fetch", skipIfDotNet, fun _ ->
+    assertThat window isNotNull
+)
+```
+
+### `skipIfPython`
+
+```fsharp
+skipIfPython : TestConfig -> TestConfig
+```
+
+Skips when compiled to Python (Fable).
+
+```fsharp
+test ("uses a JS-only API", skipIfPython, fun _ ->
     assertThat window isNotNull
 )
 ```

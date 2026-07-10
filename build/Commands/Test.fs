@@ -170,12 +170,6 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
         |> CmdLine.appendRaw "--runScript"
         |> CmdLine.toString
 
-    // TypeScript compiles to a dedicated `ts-build` folder (kept OUT of `obj/`: compiling into
-    // `obj/` makes Fable reuse the MSBuild intermediate cache and mis-hashes overloaded members,
-    // e.g. Scriptorium.Hedgehog `Test.property`, into "Cannot have two module members with same
-    // name" - any output dir outside obj/ compiles cleanly). It runs through tsx, which strips types
-    // via esbuild; plain `node --experimental-strip-types` cannot run it because Fable still imports
-    // some generated type aliases (`*_$union`) as values (tracked as a Fable repro to forward).
     let typescript =
         CmdLine.empty
         |> CmdLine.appendRaw "fable"

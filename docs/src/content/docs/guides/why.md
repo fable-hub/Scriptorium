@@ -7,7 +7,7 @@ description: The philosophy behind the Scriptorium family of libraries.
 
 Since its inception, the Fable ecosystem has been about bringing the power of F# to other runtimes. But for years, testing Fable applications meant maintaining compatibility layers between .NET testing tools and JavaScript testing frameworks.
 
-Scriptorium is built to change that. It provides a family of focused libraries for testing Fable applications, all written in F#, designed to run on any Fable-supported platform with a consistent experience - the same API whether you target Node.js, the browser, or plain .NET.
+Scriptorium is built to change that. It provides a family of focused libraries for testing Fable applications, all written in F#, designed to run on any Fable-supported platform with a consistent experience - the same API whether you target JavaScript (Node.js or the browser), TypeScript, Python, or plain .NET.
 
 ## A single metaphor, many responsibilities
 

@@ -65,10 +65,8 @@ module Derive =
 
     let private makeTypedArray (elementType: Type) (values: obj list) : obj =
         #if FABLE_COMPILER
-        // Generics are erased under Fable, so a plain JS array of the boxed values already *is*
-        // the typed array - no reflective element-typed allocation is needed (or supported).
-        // `Array.CreateInstance`/`SetValue` are not supported by Fable, so this branch stays a
-        // compiler directive rather than a `Compiler.isDotnet` runtime check.
+        // Fable erases generics, so a plain array of the boxed values already IS the typed array.
+        // Stays a `#if` (not `Compiler.isDotnet`): Fable can't translate `Array.CreateInstance`/`SetValue`.
         box (List.toArray values)
         #else
             let arr = Array.CreateInstance(elementType, List.length values)
@@ -81,13 +79,10 @@ module Derive =
             let setType = setDef.MakeGenericType [| elementType |]
             Activator.CreateInstance(setType, [| makeTypedList elementType values |])
         else
-            // obj carries no `comparison` constraint, but Fable erases generics and compares
-            // structurally at runtime, so we borrow an arbitrary comparable witness type to satisfy
-            // the type-checker. The cast must be applied to the WHOLE list (a reference value -> a
-            // genuine identity coercion under Fable). A per-element `unbox<int>` would int-coerce any
-            // non-numeric value to 0 (a union case object becomes `0`, etc.), silently corrupting
-            // Set/Map of user types. With the list-level cast the element values are untouched and
-            // Fable's structural comparer keys the Set/Map by the real values.
+            // Fable erases generics and compares structurally, so we borrow a comparable witness
+            // type to satisfy the checker. Cast the WHOLE list (an identity coercion), NOT per element:
+            // a per-element `unbox<int>` would coerce non-numeric values to 0 (a union case -> `0`),
+            // silently corrupting Set/Map of user types.
             (box values |> unbox<int list>) |> Set.ofList |> box
 
     let private makeTypedMap (keyType: Type) (valueType: Type) (pairs: obj list) : obj =
@@ -178,10 +173,9 @@ module Derive =
         (elementType: Type)
         : Gen<obj list>
         =
-        // Elements use the unchanged size (no per-descent scaling) - parity with Hedgehog's auto-gen,
-        // which also only depth-limits per type. So deep heterogeneous nesting multiplies (~seqRange
-        // per level) and is slow on this reflection backend; bound seqRange for such types. Depth-
-        // scaled sizing (Gen.scale per level) was considered and deliberately deferred.
+        // Elements keep the unchanged size (only depth is limited per type, matching Hedgehog's
+        // auto-gen). Deep heterogeneous nesting therefore multiplies (~seqRange per level) and is
+        // slow on this reflection backend; bound seqRange for such types.
         if state.CanRecurse then
             build config state elementType |> Gen.list (DeriveConfig.seqRange config)
         else

@@ -19,9 +19,10 @@ Required:
 - .NET SDK/Runtime
 - [Fable](https://fable.io)
 
-If needed:
+Depending on the target you run:
 
-- Node.js
+- Node.js — for the JavaScript and TypeScript targets
+- Python 3 with `pip install fable-library` — for the Python target
 
 ## Setup
 
@@ -44,7 +45,7 @@ If needed:
 3. Write your first test
 
     ```fs
-    // Program.js
+    // Program.fs
     module YourProjectName.Main
 
     open Scriptorium.Nib.Assertion
@@ -74,12 +75,20 @@ If needed:
 4. Finally run the tests
 
     ```sh title=""
+    # .NET
+    dotnet run
+
     # JavaScript
     dotnet fable --runScript
 
-    # .NET
-    dotnet run
+    # TypeScript
+    dotnet fable --lang typescript -o build-ts --run npx tsx build-ts/Program.ts
+
+    # Python (needs fable-library in the environment)
+    dotnet fable --lang python -o build-py --run python build-py/program.py
     ```
+
+    The same test suite runs unchanged on every target.
 
     You should see output like this:
 
