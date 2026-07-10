@@ -12,6 +12,7 @@ F# libraries for building and testing F#/Fable applications.
 | **Scriptorium.Quill** | Test runner with coloured output and source links | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Quill)](https://www.nuget.org/packages/Scriptorium.Quill) |
 | **Scriptorium.Nib.Snapshot** | Snapshot assertions for Nib | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Nib.Snapshot)](https://www.nuget.org/packages/Scriptorium.Nib.Snapshot) |
 | **Scriptorium.Nib.Browser** | Browser tests via Playwright | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Nib.Browser)](https://www.nuget.org/packages/Scriptorium.Nib.Browser) |
+| **Scriptorium.Hedgehog** | Property-based testing (Hedgehog integration) | [![NuGet](https://badgen.net/nuget/v/Scriptorium.Hedgehog)](https://www.nuget.org/packages/Scriptorium.Hedgehog) |
 
 ## Quick start
 
