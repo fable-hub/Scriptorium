@@ -292,7 +292,11 @@ module internal Advanced =
     #if FABLE_COMPILER_PYTHON
         Fable.Core.PyInterop.emitPyStatement s "__import__('sys').stdout.write($0); __import__('sys').stdout.flush()"
     #endif
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
+    #if FABLE_COMPILER_BEAM
+        // io:put_chars writes the binary without a trailing newline.
+        Fable.Core.BeamInterop.emitErlStatement s "io:put_chars($0)"
+    #endif
+    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Console.Write(s)
     #endif
 
@@ -374,7 +378,15 @@ module internal Advanced =
         0
     #endif
 
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT)
+    #if FABLE_COMPILER_BEAM
+        // On the BEAM the run is synchronous; halt/1 exits the VM with the test exit code
+        // (the analog of process.exit), so `erl` returns non-zero when tests fail.
+        let exitCode = Async.RunSynchronously funcAsync
+        Fable.Core.BeamInterop.emitErlStatement exitCode "halt($0)"
+        exitCode
+    #endif
+
+    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_BEAM)
         Async.RunSynchronously funcAsync
     #endif
 

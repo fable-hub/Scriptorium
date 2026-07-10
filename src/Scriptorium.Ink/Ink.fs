@@ -20,7 +20,12 @@ let private colorsEnabled: bool =
     Fable.Core.PyInterop.emitPyExpr () "__import__('os').environ.get('NO_COLOR') is None"
 #endif
 
-#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
+#if FABLE_COMPILER_BEAM
+    // os:getenv/1 returns the atom false when NO_COLOR is unset (i.e. colors enabled).
+    Fable.Core.BeamInterop.emitErlExpr () "os:getenv(\"NO_COLOR\") =:= false"
+#endif
+
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
     System.Environment.GetEnvironmentVariable("NO_COLOR") |> isNull
 #endif
 
