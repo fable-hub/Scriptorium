@@ -1,5 +1,6 @@
 namespace Scriptorium.Hedgehog
 
+open Fable.Core
 open Hedgehog
 open Hedgehog.FSharp
 
@@ -25,7 +26,14 @@ module DeriveConfig =
     // Exponential (not linear) so most generated collections stay small and only the largest
     // sizes approach the bound - keeps auto-derivation of nested types cheap on average. Matches
     // upstream Hedgehog's AutoGenConfig.
-    let private defaultSeqRange = Range.exponential 0 50
+    let private defaultSeqRange =
+        // Cap Python at 15: CPython is too slow to build worst-case shrink trees for the heaviest
+        // nested collections within a reasonable per-test budget at 50. Other targets keep [0,50].
+        if Compiler.isPython then
+            Range.exponential 0 15
+        else
+            Range.exponential 0 50
+
     let private defaultRecursionDepth = 1
 
     /// A configuration with no generators and default sizing/recursion - a base to add only the

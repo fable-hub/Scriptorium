@@ -116,13 +116,11 @@ It should be one of the following:
     member this.SupportedRuntimes =
         match this with
         | Scriptorium_Hedgehog ->
-            // No Python: the reflection-based `Derive` walker does not run under fable-library-python
-            // (the hand-written property API works, but auto-derivation fails). Tracked as a Fable
-            // repro to forward upstream; re-enable once fixed.
             [
                 DotNet
                 JavaScript
                 TypeScript
+                Python
             ]
         | Scriptorium_Ink ->
             [

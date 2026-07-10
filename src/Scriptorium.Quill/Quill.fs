@@ -295,7 +295,10 @@ module internal Advanced =
             s
             "(typeof process !== 'undefined' && process.stdout) ? process.stdout.write($0) : console.log($0)"
     #endif
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT)
+    #if FABLE_COMPILER_PYTHON
+        Fable.Core.PyInterop.emitPyStatement s "__import__('sys').stdout.write($0); __import__('sys').stdout.flush()"
+    #endif
+    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
         System.Console.Write(s)
     #endif
 

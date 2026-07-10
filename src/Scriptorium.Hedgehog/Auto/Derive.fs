@@ -63,19 +63,18 @@ module Derive =
             // runtime - no reflective cons/nil rebuild (F# list isn't a reflectable union there).
             box values
 
-#if FABLE_COMPILER
-    let private makeTypedArray (_elementType: Type) (values: obj list) : obj =
+    let private makeTypedArray (elementType: Type) (values: obj list) : obj =
+        #if FABLE_COMPILER
         // Generics are erased under Fable, so a plain JS array of the boxed values already *is*
         // the typed array - no reflective element-typed allocation is needed (or supported).
         // `Array.CreateInstance`/`SetValue` are not supported by Fable, so this branch stays a
         // compiler directive rather than a `Compiler.isDotnet` runtime check.
         box (List.toArray values)
-#else
-    let private makeTypedArray (elementType: Type) (values: obj list) : obj =
-        let arr = Array.CreateInstance(elementType, List.length values)
-        values |> List.iteri (fun i v -> arr.SetValue(v, i))
-        box arr
-#endif
+        #else
+            let arr = Array.CreateInstance(elementType, List.length values)
+            values |> List.iteri (fun i v -> arr.SetValue(v, i))
+            box arr
+        #endif
 
     let private makeTypedSet (elementType: Type) (values: obj list) : obj =
         if Compiler.isDotnet then
