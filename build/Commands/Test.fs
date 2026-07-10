@@ -1,5 +1,6 @@
 module EasyBuild.Commands.Test
 
+open System.IO
 open Spectre.Console.Cli
 open SimpleExec
 open BlackFox.CommandLine
@@ -12,6 +13,7 @@ type Runtime =
     | JavaScript
     | TypeScript
     | Python
+    | Beam
     | AllRuntime
 
     static member All =
@@ -26,6 +28,7 @@ type Runtime =
         | JavaScript -> "js"
         | TypeScript -> "ts"
         | Python -> "py"
+        | Beam -> "beam"
 
     static member fromString(value: string) =
         match value.ToLowerInvariant() with
@@ -37,18 +40,19 @@ type Runtime =
         | "ts" -> TypeScript
         | "python"
         | "py" -> Python
+        | "beam"
+        | "erlang" -> Beam
         | _ ->
             failwith
                 $"""Unknown runtime value: '%s{value}'
 
 It should be one of the following:
 - dotnet
-- javascript
-- js
-- typescript
-- ts
-- python
-- py
+- javascript (or js)
+- typescript (or ts)
+- python (or py)
+- beam (or erlang)
+- all
         """
 
 type Project =
@@ -98,6 +102,7 @@ It should be one of the following:
 - nib-snapshot
 - parchment
 - quill
+- hedgehog
         """
 
     member this.Dir =
@@ -126,6 +131,7 @@ It should be one of the following:
                 JavaScript
                 TypeScript
                 Python
+                Beam
             ]
         | Scriptorium_Nib ->
             [
@@ -133,6 +139,7 @@ It should be one of the following:
                 JavaScript
                 TypeScript
                 Python
+                Beam
             ]
         | Scriptorium_Nib_Browser -> [ JavaScript ]
         | Scriptorium_Nib_Snapshot ->
@@ -148,6 +155,7 @@ It should be one of the following:
                 JavaScript
                 TypeScript
                 Python
+                Beam
             ]
         | Scriptorium_Quill ->
             [
@@ -155,6 +163,7 @@ It should be one of the following:
                 JavaScript
                 TypeScript
                 Python
+                Beam
             ]
         | AllProject -> failwith "All is not a real project, it should be captured before"
 
@@ -218,15 +227,46 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
             let dotnetRun (args: string) =
                 Command.Run("dotnet", args, workingDirectory = project.Dir)
 
+            // BEAM has no single-step `--run`: Fable emits `.erl`, which must be compiled
+            // with rebar3 and executed on the Erlang VM.
+            let runBeam () =
+                let beamBuildDir = Path.Combine(project.Dir, "beam-build")
+
+                let erlLibs =
+                    Path.GetFullPath(Path.Combine(beamBuildDir, "_build", "default", "lib"))
+
+                // 1. Transpile F# to Erlang into beam-build/ (also emits fable-library-beam).
+                Command.Run(
+                    "dotnet",
+                    "fable --lang beam -o beam-build",
+                    workingDirectory = project.Dir
+                )
+                // 2. Compile the generated Erlang with rebar3.
+                Command.Run("rebar3", "compile", workingDirectory = beamBuildDir)
+                // 3. Run the suite on the BEAM. ERL_LIBS makes every compiled app's ebin
+                //    (incl. fable-library-beam) loadable. Fable emits the [<EntryPoint>] as
+                //    main:main/1 (argv); it runs the suite and halts with the exit code.
+                Command.Run(
+                    "erl",
+                    "-noshell -eval main:main([]) -s init stop",
+                    workingDirectory = beamBuildDir,
+                    configureEnvironment =
+                        (fun (env: System.Collections.Generic.IDictionary<string, string>) ->
+                            env.["ERL_LIBS"] <- erlLibs
+                        )
+                )
+
             match runtime with
             | DotNet -> dotnetRun dotnet
             | JavaScript -> dotnetRun javascript
             | TypeScript -> dotnetRun typescript
             | Python -> dotnetRun python
+            | Beam -> runBeam ()
             | AllRuntime ->
                 dotnetRun javascript
                 dotnetRun typescript
                 dotnetRun python
+                runBeam ()
                 dotnetRun dotnet
         with :? ExitCodeException ->
             printfn
@@ -252,6 +292,7 @@ Accepted values:
 - nib-snapshot
 - parchment
 - quill
+- hedgehog
 - all
 
 Default: all""")>]
@@ -265,6 +306,7 @@ Accepted values:
 - javascript (or js)
 - typescript (or ts)
 - python (or py)
+- beam (or erlang)
 - all
 
 Default: all""")>]

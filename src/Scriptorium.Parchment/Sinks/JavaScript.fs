@@ -4,9 +4,9 @@ open Fable.Core.JS
 open Fable.Core.JsInterop
 open Scriptorium.Parchment
 
-// This module emits raw JavaScript (console API), which the Python target cannot compile, so it is
-// excluded there. It stays available on .NET for source compatibility (as before).
-#if !FABLE_COMPILER_PYTHON
+// This module emits raw JavaScript (console API), which the Python and BEAM targets cannot compile,
+// so it is excluded there. It stays available on .NET for source compatibility (as before).
+#if !(FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
 /// <summary>
 /// Sinks that rely on JavaScript-specific APIs.
 /// </summary>

@@ -24,7 +24,11 @@ module Universal =
         #if FABLE_COMPILER_PYTHON
         Fable.Core.PyInterop.emitPyStatement msg "print($0, file=__import__('sys').stderr)"
         #endif
-        #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON)
+        #if FABLE_COMPILER_BEAM
+        // ~ts treats the binary as data (not a format string); standard_error is stderr.
+        Fable.Core.BeamInterop.emitErlStatement msg "io:format(standard_error, \"~ts~n\", [$0])"
+        #endif
+        #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Console.Error.WriteLine(msg)
         #endif
 

@@ -29,6 +29,12 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Setup Erlang/OTP
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: "27"
+          rebar3-version: "3"
+
       - name: Install Playwright browsers
         run: |
           npm install

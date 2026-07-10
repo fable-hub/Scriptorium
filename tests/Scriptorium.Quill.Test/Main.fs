@@ -362,6 +362,10 @@ let main _ =
 
                         testAsync (
                             "children run one after another",
+                            // On the BEAM, this list is dispatched via the top-level Async.Parallel
+                            // in `execute`, which runs it in a spawned, heap-isolated process, so the
+                            // assertion can't observe its mutations to `order` (sequencing itself works).
+                            skipIfBeam,
                             fun _ ->
                                 async {
                                     let order = System.Collections.Generic.List<int>()
@@ -548,7 +552,8 @@ let main _ =
                                     match Prelude.currentPlatform with
                                     | JavaScript -> assertThat (isSkipped results[0]) isTrue
                                     | DotNet
-                                    | Python -> assertThat (isPassed results[0]) isTrue
+                                    | Python
+                                    | Beam -> assertThat (isPassed results[0]) isTrue
                                 }
                         )
 
@@ -567,7 +572,8 @@ let main _ =
                                     match Prelude.currentPlatform with
                                     | DotNet -> assertThat (isSkipped results[0]) isTrue
                                     | JavaScript
-                                    | Python -> assertThat (isPassed results[0]) isTrue
+                                    | Python
+                                    | Beam -> assertThat (isPassed results[0]) isTrue
                                 }
                         )
 

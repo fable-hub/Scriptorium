@@ -4,6 +4,7 @@ type TargetPlatform =
     | JavaScript
     | DotNet
     | Python
+    | Beam
 
 type TestConfig =
     {

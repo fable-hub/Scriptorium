@@ -42,3 +42,6 @@ docs/src/content/docs/.gitignore
 # Fable TS/Python test output (kept out of obj/)
 ts-build/
 py-build/
+
+# Fable BEAM/Erlang test output (transpiled .erl + rebar3 build)
+beam-build/
