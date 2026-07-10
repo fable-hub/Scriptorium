@@ -3,8 +3,6 @@ module EasyBuild.Commands.Test
 open Spectre.Console.Cli
 open SimpleExec
 open BlackFox.CommandLine
-open System.IO
-open System.Runtime.InteropServices
 open EasyBuild.Workspace
 open System.ComponentModel
 open Microsoft.FSharp.Reflection
@@ -183,17 +181,6 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
         |> CmdLine.appendRaw "ts-build/Main.ts"
         |> CmdLine.toString
 
-    // Python runs from a dedicated venv (created on demand) that carries the fable-library runtime,
-    // since the system Python is often externally managed. Fable compiles to a dedicated `py-build`
-    // folder (kept out of obj/, like the TS output) and `--run`s the venv interpreter on main.py.
-    let venvDir = Path.GetFullPath(Path.Combine(Workspace.``.``, ".venv"))
-
-    let venvPython =
-        if RuntimeInformation.IsOSPlatform(OSPlatform.Windows) then
-            Path.Combine(venvDir, "Scripts", "python.exe")
-        else
-            Path.Combine(venvDir, "bin", "python")
-
     let python =
         CmdLine.empty
         |> CmdLine.appendRaw "fable"
@@ -202,7 +189,10 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
         |> CmdLine.appendRaw "-o"
         |> CmdLine.appendRaw "py-build"
         |> CmdLine.appendRaw "--run"
-        |> CmdLine.appendRaw venvPython
+        |> CmdLine.appendRaw "uv"
+        |> CmdLine.appendRaw "run"
+        |> CmdLine.appendRaw "--frozen"
+        |> CmdLine.appendRaw "python"
         |> CmdLine.appendRaw "py-build/main.py"
         |> CmdLine.toString
 
@@ -228,23 +218,14 @@ let private testProject (project: Project) (runtime: Runtime) (isWatch: bool) =
             let dotnetRun (args: string) =
                 Command.Run("dotnet", args, workingDirectory = project.Dir)
 
-            // Create the Python venv with the fable-library runtime once, on first Python run.
-            let ensurePythonEnv () =
-                if not (File.Exists venvPython) then
-                    Command.Run("python3", $"-m venv \"%s{venvDir}\"")
-                    Command.Run(venvPython, "-m pip install fable-library")
-
             match runtime with
             | DotNet -> dotnetRun dotnet
             | JavaScript -> dotnetRun javascript
             | TypeScript -> dotnetRun typescript
-            | Python ->
-                ensurePythonEnv ()
-                dotnetRun python
+            | Python -> dotnetRun python
             | AllRuntime ->
                 dotnetRun javascript
                 dotnetRun typescript
-                ensurePythonEnv ()
                 dotnetRun python
                 dotnetRun dotnet
         with :? ExitCodeException ->

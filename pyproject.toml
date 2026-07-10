@@ -1,0 +1,10 @@
+# Keep `fable-library` pinned to the Fable version in `dotnet-tools.json`
+[project]
+name = "scriptorium-python-tests"
+version = "0"
+requires-python = ">=3.12,<4.0"
+dependencies = ["fable-library==5.7.0"]
+
+# Not a package: install the dependencies only, never build/install this project itself.
+[tool.uv]
+package = false

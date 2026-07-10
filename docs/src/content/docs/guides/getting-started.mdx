@@ -22,7 +22,7 @@ Required:
 Depending on the target you run:
 
 - Node.js — for the JavaScript and TypeScript targets
-- Python 3 with `pip install fable-library` — for the Python target
+- Python 3 with `fable-library` installed
 
 ## Setup
 
@@ -85,7 +85,7 @@ Depending on the target you run:
     dotnet fable --lang typescript -o build-ts --run npx tsx build-ts/Program.ts
 
     # Python (needs fable-library in the environment)
-    dotnet fable --lang python -o build-py --run python build-py/program.py
+    dotnet fable --lang python -o build-py --run uv run --frozen python build-py/program.py
     ```
 
     The same test suite runs unchanged on every target.
