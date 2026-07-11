@@ -200,10 +200,11 @@ let tests =
                     Test.property (
                         "derives Set and Map of user types",
                         property {
-                            // Set<Suit>: the union must satisfy `comparison` (it does, structurally);
-                            // Map<string, Card>: a record value behind a primitive key.
-                            let! suits = Derive.gen<Set<Suit>>
-                            let! cards = Derive.gen<Map<string, Card>>
+                            // Card's nested Tags list makes each map entry a full record derivation,
+                            // so bound this one test (same reasoning as the nested-collection test below).
+                            let config = DeriveConfig.defaults |> DeriveConfig.setSeqRange (Range.linear 0 5)
+                            let! suits = Derive.genWith<Set<Suit>> config
+                            let! cards = Derive.genWith<Map<string, Card>> config
 
                             return
                                 suits |> Set.forall (fun s -> List.contains s [ Hearts; Spades; Clubs; Diamonds ])
