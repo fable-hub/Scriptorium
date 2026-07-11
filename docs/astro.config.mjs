@@ -45,7 +45,8 @@ export default defineConfig({
                     items: [
                         'guides/why',
                         'guides/story',
-                        'guides/getting-started'
+                        'guides/getting-started',
+                        'guides/platform-support'
                     ],
                 },
                 {
