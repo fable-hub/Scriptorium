@@ -15,7 +15,7 @@ This table reflects the project's own test matrix, which is exercised in CI on e
 | [`Scriptorium.Quill`](/Scriptorium/quill/overview/) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [`Scriptorium.Hedgehog`](/Scriptorium/hedgehog/overview/) | ✅ | ✅ | ✅ | ✅ | ❌ |
 | [`Scriptorium.Nib.Snapshot`](/Scriptorium/nib-snapshot/overview/) | ✅ | ✅ | ✅ | ✅ | ❌ |
-| [`Scriptorium.Nib.Browser`](/Scriptorium/nib-browser/overview/) | ❌ | ✅ | ❌ | ❌ | ❌ |
+| [`Scriptorium.Nib.Browser`](/Scriptorium/nib-browser/overview/) | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ## Notes
 

@@ -141,7 +141,7 @@ It should be one of the following:
                 Python
                 Beam
             ]
-        | Scriptorium_Nib_Browser -> [ JavaScript ]
+        | Scriptorium_Nib_Browser -> [ JavaScript; TypeScript ]
         | Scriptorium_Nib_Snapshot ->
             [
                 DotNet

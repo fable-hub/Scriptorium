@@ -19,7 +19,7 @@ composable assertions with Playwright-powered DOM checks and wraps `Scriptorium.
 helpers that manage browser lifecycle automatically.
 
 :::caution
-This package only works for Fable JavaScript target
+This package only works for the Fable JavaScript and TypeScript targets
 :::
 
 ## Installation
