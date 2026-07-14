@@ -124,6 +124,7 @@ It should be one of the following:
                 JavaScript
                 TypeScript
                 Python
+                Beam
             ]
         | Scriptorium_Ink ->
             [
