@@ -33,7 +33,7 @@ type Test =
 
     /// Runs a boolean Hedgehog property as a Quill test (100 tests by default). This is the common
     /// case - a `property { ... return &lt;bool&gt; }` block has type <c>Property&lt;bool&gt;</c>.
-    static member property
+    static member testProperty
         (
             name: string,
             prop: Property<bool>,
@@ -46,7 +46,7 @@ type Test =
 
     /// Runs a unit Hedgehog property as a Quill test (100 tests by default). Use this for properties
     /// whose body asserts via exceptions and ends with <c>return ()</c>.
-    static member property
+    static member testProperty
         (
             name: string,
             prop: Property<unit>,
@@ -63,7 +63,7 @@ type Test =
     /// assertion. When the assertion throws, Hedgehog catches it, treats the case as a failure, and
     /// shrinks to a minimal counterexample - the assertion's message is shown in the report.
     /// </remarks>
-    static member property
+    static member testProperty
         (
             name: string,
             gen: Gen<'a>,
@@ -84,7 +84,7 @@ type Test =
 
     /// Runs a boolean Hedgehog property with an explicit Hedgehog <c>PropertyConfig</c> (e.g. a custom
     /// test count via <c>PropertyConfig.defaults |&gt; PropertyConfig.withTests 500&lt;tests&gt;</c>).
-    static member propertyWith
+    static member testPropertyWith
         (
             name: string,
             config: IPropertyConfig,
@@ -97,7 +97,7 @@ type Test =
         Internal.mk name filePath lineNumber (fun _ -> Property.checkBoolWith config prop)
 
     /// Runs a unit Hedgehog property with an explicit Hedgehog <c>PropertyConfig</c>.
-    static member propertyWith
+    static member testPropertyWith
         (
             name: string,
             config: IPropertyConfig,

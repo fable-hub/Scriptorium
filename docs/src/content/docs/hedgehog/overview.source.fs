@@ -32,13 +32,13 @@ dotnet add package Scriptorium.Hedgehog
 
 ## Writing a property
 
-`Test.property` turns a Hedgehog `Property<bool>` into a Quill `TestCase`. A `property { ... }` block
+`Test.testProperty` turns a Hedgehog `Property<bool>` into a Quill `TestCase`. A `property { ... }` block
 that ends with `return <bool>` is the common case - it runs 100 generated cases by default:
 
 *)
 
 let reverseRoundtrips =
-    Test.property (
+    Test.testProperty (
         "List.rev is involutive",
         property {
             let! xs = Gen.list (Range.linear 0 100) (Gen.int32 (Range.constant 0 1000))
@@ -53,7 +53,7 @@ The block can draw as many generators as it needs with `let!`:
 *)
 
 let additionCommutes =
-    Test.property (
+    Test.testProperty (
         "addition is commutative",
         property {
             let! a = Gen.int32 (Range.linear -1000 1000)
@@ -66,14 +66,14 @@ let additionCommutes =
 
 ## Asserting with Nib
 
-Instead of returning a `bool`, you can pass `Test.property` a generator and an assertion function.
+Instead of returning a `bool`, you can pass `Test.testProperty` a generator and an assertion function.
 Any `Scriptorium.Nib` assertion works: when it throws, Hedgehog records a failure, shrinks to a
 minimal counterexample, and shows the assertion's message.
 
 *)
 
 let doublingMatches =
-    Test.property (
+    Test.testProperty (
         "doubling equals adding to itself",
         Gen.int32 (Range.linear -1000 1000),
         fun n -> assertThat (n * 2) (isEqualTo (n + n))
@@ -82,10 +82,10 @@ let doublingMatches =
 (**
 
 A unit property (`property { ... }` whose body asserts by throwing and ends with `return ()`) works
-through the same `Test.property` overload set:
+through the same `Test.testProperty` overload set:
 
 ```fsharp
-Test.property (
+Test.testProperty (
     "reverse preserves length",
     property {
         let! xs = Gen.list (Range.linear 0 50) (Gen.int32 (Range.constant 0 100))
@@ -97,13 +97,13 @@ Test.property (
 
 ## Custom configuration
 
-`Test.propertyWith` accepts a Hedgehog `PropertyConfig` - for example to change the number of
+`Test.testPropertyWith` accepts a Hedgehog `PropertyConfig` - for example to change the number of
 generated cases:
 
 *)
 
 let manyTests =
-    Test.propertyWith (
+    Test.testPropertyWith (
         "holds across 500 cases",
         PropertyConfig.defaults |> PropertyConfig.withTests 500<tests>,
         property {
@@ -131,7 +131,7 @@ type Point =
     }
 
 let swapIsInvolutive =
-    Test.property (
+    Test.testProperty (
         "swapping a point's coordinates twice restores it",
         property {
             let! p = Derive.gen<Point>
@@ -175,7 +175,7 @@ let linkConfig =
     )
 
 let everyLinkIsHttps =
-    Test.property (
+    Test.testProperty (
         "derived links use https",
         property {
             let! link = Derive.genWith<Link> linkConfig

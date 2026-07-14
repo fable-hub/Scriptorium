@@ -43,7 +43,7 @@ let tests =
         "Scriptorium.Hedgehog",
         [
             // The Hedgehog manual API (Gen / Range / property { }) driven through the Quill runner.
-            Test.property (
+            Test.testProperty (
                 "List.rev is involutive (property CE)",
                 property {
                     let! xs = Gen.list (Range.linear 0 100) (Gen.int32 (Range.constant 0 1000))
@@ -51,7 +51,7 @@ let tests =
                 }
             )
 
-            Test.property (
+            Test.testProperty (
                 "addition is commutative",
                 property {
                     let! a = Gen.int32 (Range.linear -1000 1000)
@@ -61,14 +61,14 @@ let tests =
             )
 
             // The Nib bridge: generate values, assert with Scriptorium.Nib's assertThat.
-            Test.property (
+            Test.testProperty (
                 "doubling equals adding to itself (Nib assertThat)",
                 Gen.int32 (Range.linear -1000 1000),
                 fun n -> assertThat (n * 2) (isEqualTo (n + n))
             )
 
             // An explicit Hedgehog PropertyConfig (custom test count).
-            Test.propertyWith (
+            Test.testPropertyWith (
                 "runs with an explicit config (500 tests)",
                 PropertyConfig.defaults |> PropertyConfig.withTests 500<tests>,
                 property {
@@ -120,7 +120,7 @@ let tests =
             testList (
                 "Derive (reflection-based auto-gen)",
                 [
-                    Test.property (
+                    Test.testProperty (
                         "derives records with primitives and collections",
                         property {
                             let! card = Derive.gen<Card>
@@ -128,7 +128,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives discriminated unions",
                         property {
                             let! shape = Derive.gen<Shape>
@@ -140,7 +140,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives enums",
                         property {
                             let! suit = Derive.gen<Suit>
@@ -148,7 +148,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives tuples and options",
                         property {
                             let! (n, maybe) = Derive.gen<int * string option>
@@ -161,7 +161,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives F# Set and Map",
                         property {
                             let! set = Derive.gen<Set<int>>
@@ -173,7 +173,7 @@ let tests =
                     // Collections of NON-primitive element types: the element type recurses back
                     // through the full walker, so any user type should compose under list/array/
                     // seq/Set/Map.
-                    Test.property (
+                    Test.testProperty (
                         "derives a list of a user record",
                         property {
                             let! cards = Derive.gen<Card list>
@@ -181,7 +181,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives an array",
                         property {
                             let! arr = Derive.gen<int array>
@@ -189,7 +189,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives a seq",
                         property {
                             let! xs = Derive.gen<seq<int>>
@@ -197,7 +197,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives Set and Map of user types",
                         property {
                             // Card's nested Tags list makes each map entry a full record derivation,
@@ -212,7 +212,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives a nested collection (Map of user key to list of records)",
                         property {
                             // Exponential sizing keeps the shallow cases fast on the default, but a
@@ -224,7 +224,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "derives a terminating generator for recursive unions",
                         property {
                             let! tree = Derive.gen<Tree>
@@ -232,7 +232,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "honours a deeper recursion depth via autoWith",
                         property {
                             let config =
@@ -243,7 +243,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "addGenerator overrides the derived generator",
                         property {
                             let config =
@@ -255,7 +255,7 @@ let tests =
                         }
                     )
 
-                    Test.property (
+                    Test.testProperty (
                         "addGenerator can compose another generator (varied UserId)",
                         property {
                             // The registered generator is itself built from an int generator, so
