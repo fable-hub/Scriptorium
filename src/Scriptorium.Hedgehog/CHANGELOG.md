@@ -1,5 +1,5 @@
 ---
-last_commit_released: 2cc3cecb8f4974a930007ef06c4cabb8b2590de3
+last_commit_released: ed13f0d3cb498a0ca94ad84ef32f8c4967eca081
 ---
 
 # Changelog
@@ -11,6 +11,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 This changelog is generated using [EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt).
 
 ⚠ Only edit the front matter metadata at the top of this file. All other changes will be overwritten when a new release is created.
+
+## 0.3.0 - 2026-07-14
+
+### 🚀 Features
+
+* Add fable-python tag ([39b505c](https://github.com/fable-hub/Scriptorium/commit/39b505cd5823f009532ee442f5b8c79b60f499ec))
+* Rename Hedgehog `Test.property` to `Test.testProperty` ([ed13f0d](https://github.com/fable-hub/Scriptorium/commit/ed13f0d3cb498a0ca94ad84ef32f8c4967eca081))
+
+<strong><small>[View changes on Github](https://github.com/fable-hub/Scriptorium/compare/2cc3cecb8f4974a930007ef06c4cabb8b2590de3..ed13f0d3cb498a0ca94ad84ef32f8c4967eca081)</small></strong>
 
 ## 0.2.0 - 2026-07-10
 
