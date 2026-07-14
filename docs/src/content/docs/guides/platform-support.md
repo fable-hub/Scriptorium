@@ -13,7 +13,7 @@ This table reflects the project's own test matrix, which is exercised in CI on e
 | [`Scriptorium.Parchment`](/Scriptorium/parchment/overview/) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [`Scriptorium.Nib`](/Scriptorium/nib/overview/) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [`Scriptorium.Quill`](/Scriptorium/quill/overview/) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [`Scriptorium.Hedgehog`](/Scriptorium/hedgehog/overview/) | ✅ | ✅ | ✅ | ✅ | ❌ |
+| [`Scriptorium.Hedgehog`](/Scriptorium/hedgehog/overview/) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [`Scriptorium.Nib.Snapshot`](/Scriptorium/nib-snapshot/overview/) | ✅ | ✅ | ✅ | ✅ | ❌ |
 | [`Scriptorium.Nib.Browser`](/Scriptorium/nib-browser/overview/) | ❌ | ✅ | ✅ | ❌ | ❌ |
 
@@ -21,6 +21,6 @@ This table reflects the project's own test matrix, which is exercised in CI on e
 
 - **TypeScript** compiles through the same pipeline as JavaScript and runs on the JavaScript runtime - it's listed separately here because it's tested as its own Fable target.
 - **`Scriptorium.Nib.Browser`** wraps Playwright's Node.js API directly, so it's JavaScript-only by design.
-- **`Scriptorium.Hedgehog`** and **`Scriptorium.Nib.Snapshot`** don't support Beam yet - they're deferred pending reflection-heavy generator internals and heavy filesystem I/O respectively.
+- **`Scriptorium.Nib.Snapshot`** doesn't support Beam yet - it's deferred pending heavy filesystem I/O.
 
 If a library doesn't list a target here, treat it as unsupported: it isn't compiled or tested against that target, and behaviour there is undefined.
