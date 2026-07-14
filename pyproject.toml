@@ -3,7 +3,7 @@
 name = "scriptorium-python-tests"
 version = "0"
 requires-python = ">=3.12,<4.0"
-dependencies = ["fable-library==5.8.0"]
+dependencies = ["fable-library==5.8.1"]
 
 # Not a package: install the dependencies only, never build/install this project itself.
 [tool.uv]
