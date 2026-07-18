@@ -397,6 +397,7 @@ open Advanced
 type Runner =
 
     static member runTestsWith(configurer: TestConfig -> TestConfig, tests: TestCase list) =
+        initTerminal ()
         let duplicates = findDuplicatePaths tests
 
         if not duplicates.IsEmpty then
