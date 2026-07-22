@@ -1,5 +1,5 @@
 ---
-last_commit_released: ed13f0d3cb498a0ca94ad84ef32f8c4967eca081
+last_commit_released: 7aa232af08448ddaed6884e96d67a8ca083ec47d
 ---
 
 # Changelog
@@ -11,6 +11,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 This changelog is generated using [EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt).
 
 ⚠ Only edit the front matter metadata at the top of this file. All other changes will be overwritten when a new release is created.
+
+## 0.4.0 - 2026-07-22
+
+### 🚀 Features
+
+* Add Fable/BEAM (Erlang) as a target for Scriptorium.Hedgehog (#12) ([22bf976](https://github.com/fable-hub/Scriptorium/commit/22bf97602b74f3d097a27da241e1fce17c803624))
+
+<strong><small>[View changes on Github](https://github.com/fable-hub/Scriptorium/compare/ed13f0d3cb498a0ca94ad84ef32f8c4967eca081..7aa232af08448ddaed6884e96d67a8ca083ec47d)</small></strong>
 
 ## 0.3.0 - 2026-07-14
 
