@@ -91,3 +91,19 @@ module Prelude =
     #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Environment.GetEnvironmentVariable("CI") |> isNull |> not
     #endif
+
+    /// Put the terminal into a state where the runner's output renders correctly.
+    /// No-op everywhere except BEAM, where `standard_io` and `standard_error` default to
+    /// latin1 under `erl -noshell`: any codepoint > 255 is then printed as an escape (U+2717
+    /// shows up as an escaped literal instead of ✗) and UTF-8 binaries passed to
+    /// `io:put_chars` are re-encoded as mojibake.
+    /// ANSI colour codes are pure ASCII and so were never affected. The `+pc unicode` VM
+    /// flag does NOT fix this - it only affects printable-list detection in `~p`.
+    let initTerminal () : unit =
+    #if FABLE_COMPILER_BEAM
+        Fable.Core.BeamInterop.emitErlStatement () "io:setopts(standard_io, [{encoding, unicode}])"
+        Fable.Core.BeamInterop.emitErlStatement () "io:setopts(standard_error, [{encoding, unicode}])"
+    #endif
+    #if !FABLE_COMPILER_BEAM
+        ()
+    #endif
