@@ -56,8 +56,15 @@ module Diff =
         computeOps (expected.ToCharArray()) (actual.ToCharArray())
         |> List.fold
             (fun acc op ->
-                let toStr =
-                    function
+                // The Op<char> annotation is load-bearing on the BEAM target, not decoration.
+                // Without it F# generalizes this binding to Op<'a> -> Op<string>, so `string c`
+                // is applied at a generic type. BEAM represents char as a plain integer - the
+                // same runtime form as int - so the erased-generic path can only emit
+                // fable_convert:to_string, which sees an integer and prints the codepoint:
+                // a diff of "1" against "2" then renders as 49 against 50. Pinning the type
+                // (or marking the binding inline) lets the compiler resolve char statically.
+                let toStr (op: Op<char>) =
+                    match op with
                     | Keep c -> Keep(string c)
                     | OnlyLeft c -> OnlyLeft(string c)
                     | OnlyRight c -> OnlyRight(string c)

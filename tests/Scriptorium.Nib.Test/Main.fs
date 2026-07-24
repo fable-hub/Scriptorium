@@ -882,6 +882,43 @@ let main _ =
                     ]
                 )
 
+                testList (
+                    "diff rendering",
+                    [
+
+                        // Regression: on BEAM a char is a plain integer at runtime, so applying
+                        // `string` to one at an erased generic type prints the codepoint. The
+                        // char-level diff of "1" against "2" rendered as 49 against 50.
+                        test (
+                            "char-level diff shows characters, not codepoints",
+                            fun _ ->
+                                assertThat
+                                    (fun _ -> assertThat "1" (isEqualTo "2"))
+                                    (throws
+                                     >> focus _.Message
+                                     >> satisfy (fun m ->
+                                         not (m.Contains "49") && not (m.Contains "50")
+                                     ))
+                        )
+
+                        // Same path, above the ASCII range: the char must widen correctly.
+                        // Scoped to the "Diff:" section itself (not the whole message) since
+                        // the "given ... should be equal to ..." prefix already carries the
+                        // raw é/ü regardless of whether the diff renderer works.
+                        test (
+                            "char-level diff handles non-ASCII characters",
+                            fun _ ->
+                                assertThat
+                                    (fun _ -> assertThat "é" (isEqualTo "ü"))
+                                    (throws
+                                     >> focus _.Message
+                                     >> focus (fun m -> m.Substring(m.IndexOf "Diff:"))
+                                     >> satisfy (fun d -> d.Contains "é" && d.Contains "ü"))
+                        )
+
+                    ]
+                )
+
             ]
         )
 
