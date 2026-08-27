@@ -319,6 +319,10 @@ module internal Advanced =
                                                 Path = List.rev (ctx.Name :: path)
                                             }
 
+                                        // The clock starts here, not where the job was entered: on
+                                        // a cooperative runtime the scheduler can run other tests
+                                        // between the two, and that wait is not this test's.
+                                        sw.Restart()
                                         ctx.Body(testCtx)
                                         // Retroactive timeout check: synchronous code cannot be
                                         // interrupted mid-execution, so we check the wall clock

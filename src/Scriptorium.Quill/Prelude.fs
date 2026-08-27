@@ -34,7 +34,8 @@ module Prelude =
 
 #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
     type UniversalStopwatch() =
-        let startTime: float = Performance.now ()
+        let mutable startTime: float = Performance.now ()
+        member _.Restart() : unit = startTime <- Performance.now ()
         member _.ElapsedMs() : int = int (Performance.now () - startTime)
 #endif
 
@@ -44,7 +45,8 @@ module Prelude =
         let now () : float =
             Fable.Core.PyInterop.emitPyExpr () "__import__('time').perf_counter()"
 
-        let startTime = now ()
+        let mutable startTime = now ()
+        member _.Restart() : unit = startTime <- now ()
         member _.ElapsedMs() : int = int ((now () - startTime) * 1000.0)
 #endif
 
@@ -53,13 +55,15 @@ module Prelude =
         let now () : int =
             Fable.Core.BeamInterop.emitErlExpr () "erlang:monotonic_time(millisecond)"
 
-        let startTime = now ()
+        let mutable startTime = now ()
+        member _.Restart() : unit = startTime <- now ()
         member _.ElapsedMs() : int = now () - startTime
 #endif
 
 #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
     type UniversalStopwatch() =
         let sw = System.Diagnostics.Stopwatch.StartNew()
+        member _.Restart() : unit = sw.Restart()
         member _.ElapsedMs() : int = int sw.ElapsedMilliseconds
 #endif
 

@@ -66,6 +66,12 @@ let private pathOf r =
     | TestResult.Skipped p -> List.rev p
     | TestResult.Pending p -> List.rev p
 
+let private durationOf r =
+    match r with
+    | TestResult.Passed r -> r.Duration
+    | TestResult.Failed r -> r.Duration
+    | _ -> failwith "Only a finished test carries a duration"
+
 let private messageOf r =
     match r with
     | TestResult.Failed r -> r.Message
@@ -853,6 +859,43 @@ let main _ =
                                                 "c"
                                                 "d"
                                             ])
+                                }
+                        )
+
+                        testAsync (
+                            "a sync test is timed from its body, not from when its job was entered",
+                            fun _ ->
+                                async {
+                                    // Busy-waits rather than Async.Sleep: only work that holds on
+                                    // to the runtime delays the lanes sharing it, which is what
+                                    // used to leak into the last test's clock.
+                                    let busy (name: string) =
+                                        test (
+                                            name,
+                                            fun _ ->
+                                                let start = System.DateTime.UtcNow
+
+                                                while (System.DateTime.UtcNow - start)
+                                                    .TotalMilliseconds < 100.0 do
+                                                    ()
+                                        )
+
+                                    let! results =
+                                        runToResultsBounded
+                                            4
+                                            [
+                                                busy "busy1"
+                                                busy "busy2"
+                                                busy "busy3"
+                                                busy "busy4"
+                                                busy "busy5"
+                                                test ("instant", fun _ -> ())
+                                            ]
+
+                                    let instant =
+                                        results |> List.find (fun r -> pathOf r = [ "instant" ])
+
+                                    assertThat (durationOf instant) (isLessThan 100)
                                 }
                         )
 
