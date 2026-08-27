@@ -6,39 +6,39 @@ open Fable.Core.JsInterop
 module Prelude =
 
     let cwd: string =
-    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsExpr
             ()
             """
     process.cwd()
         """
-    #endif
+#endif
 
-    #if FABLE_COMPILER_PYTHON
+#if FABLE_COMPILER_PYTHON
         Fable.Core.PyInterop.emitPyExpr () "__import__('os').getcwd()"
-    #endif
+#endif
 
-    #if FABLE_COMPILER_BEAM
+#if FABLE_COMPILER_BEAM
         // file:get_cwd() returns {ok, Dir} where Dir is a charlist; F# strings are Erlang binaries.
         Fable.Core.BeamInterop.emitErlExpr () "list_to_binary(element(2, file:get_cwd()))"
-    #endif
+#endif
 
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Environment.CurrentDirectory
-    #endif
+#endif
 
     module Performance =
 
         [<Emit("performance.now()")>]
         let now () : float = jsNative
 
-    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
     type UniversalStopwatch() =
         let startTime: float = Performance.now ()
         member _.ElapsedMs() : int = int (Performance.now () - startTime)
-    #endif
+#endif
 
-    #if FABLE_COMPILER_PYTHON
+#if FABLE_COMPILER_PYTHON
     // fable-library-python has no `Stopwatch.StartNew` mapping, so use time.perf_counter (seconds).
     type UniversalStopwatch() =
         let now () : float =
@@ -46,22 +46,22 @@ module Prelude =
 
         let startTime = now ()
         member _.ElapsedMs() : int = int ((now () - startTime) * 1000.0)
-    #endif
+#endif
 
-    #if FABLE_COMPILER_BEAM
+#if FABLE_COMPILER_BEAM
     type UniversalStopwatch() =
         let now () : int =
             Fable.Core.BeamInterop.emitErlExpr () "erlang:monotonic_time(millisecond)"
 
         let startTime = now ()
         member _.ElapsedMs() : int = now () - startTime
-    #endif
+#endif
 
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
     type UniversalStopwatch() =
         let sw = System.Diagnostics.Stopwatch.StartNew()
         member _.ElapsedMs() : int = int sw.ElapsedMilliseconds
-    #endif
+#endif
 
     let currentPlatform: TargetPlatform =
         // TypeScript compiles to and runs on the JavaScript runtime, so it reports as JavaScript.
@@ -75,22 +75,22 @@ module Prelude =
             JavaScript
 
     let isCI: bool =
-    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsExpr () "!!process.env['CI']"
-    #endif
+#endif
 
-    #if FABLE_COMPILER_PYTHON
+#if FABLE_COMPILER_PYTHON
         Fable.Core.PyInterop.emitPyExpr () "__import__('os').environ.get('CI') is not None"
-    #endif
+#endif
 
-    #if FABLE_COMPILER_BEAM
+#if FABLE_COMPILER_BEAM
         // os:getenv/1 returns the value (charlist) or the atom false when unset.
         Fable.Core.BeamInterop.emitErlExpr () "os:getenv(\"CI\") =/= false"
-    #endif
+#endif
 
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Environment.GetEnvironmentVariable("CI") |> isNull |> not
-    #endif
+#endif
 
     /// Put the terminal into a state where the runner's output renders correctly.
     /// No-op everywhere except BEAM, where `standard_io` and `standard_error` default to
@@ -100,10 +100,13 @@ module Prelude =
     /// ANSI colour codes are pure ASCII and so were never affected. The `+pc unicode` VM
     /// flag does NOT fix this - it only affects printable-list detection in `~p`.
     let initTerminal () : unit =
-    #if FABLE_COMPILER_BEAM
+#if FABLE_COMPILER_BEAM
         Fable.Core.BeamInterop.emitErlStatement () "io:setopts(standard_io, [{encoding, unicode}])"
-        Fable.Core.BeamInterop.emitErlStatement () "io:setopts(standard_error, [{encoding, unicode}])"
-    #endif
-    #if !FABLE_COMPILER_BEAM
+
+        Fable.Core.BeamInterop.emitErlStatement
+            ()
+            "io:setopts(standard_error, [{encoding, unicode}])"
+#endif
+#if !FABLE_COMPILER_BEAM
         ()
-    #endif
+#endif
