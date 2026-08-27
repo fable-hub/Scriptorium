@@ -62,10 +62,11 @@ module internal Advanced =
     // Timeout helper
     // ---------------------------------------------------------------------------
 
-    /// Run `computation`, failing with a timeout message if it exceeds `ms`. Platform-specific: JS
-    /// uses `setTimeout` via `Async.FromContinuations` (Fable's `Async.StartChild` timeout overload
-    /// is broken - its `parallel2` uses `Promise.all`, so the timeout branch always fires); .NET
-    /// delegates to `Async.StartChild(computation, ms)`.
+    /// Run `computation`, failing with a timeout message if it exceeds `ms`. The budget covers the
+    /// body only: `Async.StartChild(computation, ms)` counts from the moment the body is queued, so
+    /// on .NET a saturated thread pool fails a body that has not started yet - hence the timer armed
+    /// from inside the workflow that runs the body. JS keeps a hand-rolled `setTimeout` so the timer
+    /// can be cleared - a pending one holds the Node event loop open past the end of the run.
 
     [<Emit("setTimeout($0, $1)")>]
     let jsSetTimeout (callback: unit -> unit) (ms: int) : obj = jsNative
@@ -107,10 +108,55 @@ module internal Advanced =
                     }
                 )
             )
+        elif Compiler.isDotnet then
+            Async.FromContinuations(fun (resolve, reject, _cancel) ->
+                let mutable settled = false
+
+                let settle f =
+                    if not settled then
+                        settled <- true
+                        f ()
+
+                Async.StartImmediate(
+                    async {
+                        // Armed here rather than around `computation` so the budget starts with
+                        // the body. Arming needs a thread of its own, which a saturated pool can
+                        // delay - erring towards a late timeout, never an early one.
+                        do!
+                            Async.StartChild(
+                                async {
+                                    do! Async.Sleep ms
+
+                                    settle (fun () ->
+                                        reject (
+                                            System.TimeoutException(
+                                                $"Test timed out after {ms}ms"
+                                            )
+                                        )
+                                    )
+                                }
+                            )
+                            |> Async.Ignore
+
+                        try
+                            do! computation
+                            settle (fun () -> resolve ())
+                        with ex ->
+                            settle (fun () -> reject ex)
+                    }
+                )
+            )
         else
+            // Python drives its asyncs on one loop and BEAM on cheap processes, so neither starves
+            // the way the .NET thread pool does; both raise a message-less timeout, hence the
+            // relabelling. `Async.StartImmediate` is not an option on Python - it builds a detached
+            // trampoline whose continuations never reach the caller.
             async {
-                let! timeoutable = Async.StartChild(computation, ms)
-                do! timeoutable
+                try
+                    let! timeoutable = Async.StartChild(computation, ms)
+                    do! timeoutable
+                with :? System.TimeoutException ->
+                    return raise (System.TimeoutException($"Test timed out after {ms}ms"))
             }
 
     let runSequentially (asyncs: Async<'a list> list) : Async<'a list> =

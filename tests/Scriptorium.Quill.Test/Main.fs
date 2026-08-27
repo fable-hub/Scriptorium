@@ -61,6 +61,11 @@ let private pathOf r =
     | TestResult.Skipped p -> List.rev p
     | TestResult.Pending p -> List.rev p
 
+let private messageOf r =
+    match r with
+    | TestResult.Failed r -> r.Message
+    | _ -> failwith "Only a failed test carries a message"
+
 let private slowThresholdOf r =
     match r with
     | TestResult.Passed r -> r.SlowThresholdMs
@@ -521,6 +526,29 @@ let main _ =
 
                                     assertThat results (hasSize 1)
                                     assertThat (isFailed results[0]) isTrue
+                                }
+                        )
+
+                        testAsync (
+                            "an async timeout names the budget it blew",
+                            // Fable's Python runtime raises a message-less builtin TimeoutError,
+                            // which is not the TimeoutException the relabelling matches on.
+                            skipIfPython,
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                testAsync (
+                                                    "slow test",
+                                                    timeout 100,
+                                                    fun _ -> async { do! Async.Sleep 500 }
+                                                )
+                                            ]
+
+                                    assertThat
+                                        (messageOf results[0])
+                                        (isEqualTo "Test timed out after 100ms")
                                 }
                         )
 
