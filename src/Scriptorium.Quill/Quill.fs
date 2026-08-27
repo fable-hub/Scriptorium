@@ -9,7 +9,6 @@ open Fable.Core.JsInterop
 
 module internal Advanced =
 
-
     let hasFocused (tests: TestCase list) : bool =
         let rec check test =
             match test with
@@ -218,7 +217,9 @@ module internal Advanced =
 
                                     match effectiveConfig.TimeoutMs with
                                     | Some ms when elapsed >= ms ->
-                                        raise (System.TimeoutException($"Test timed out after {ms}ms"))
+                                        raise (
+                                            System.TimeoutException($"Test timed out after {ms}ms")
+                                        )
                                     | _ -> ()
                                 }
                             )
@@ -284,21 +285,23 @@ module internal Advanced =
 
     /// Raw write without a trailing newline - used for the live dot progress line.
     let writeRaw (s: string) : unit =
-    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         emitJsStatement
             s
             "(typeof process !== 'undefined' && process.stdout) ? process.stdout.write($0) : console.log($0)"
-    #endif
-    #if FABLE_COMPILER_PYTHON
-        Fable.Core.PyInterop.emitPyStatement s "__import__('sys').stdout.write($0); __import__('sys').stdout.flush()"
-    #endif
-    #if FABLE_COMPILER_BEAM
+#endif
+#if FABLE_COMPILER_PYTHON
+        Fable.Core.PyInterop.emitPyStatement
+            s
+            "__import__('sys').stdout.write($0); __import__('sys').stdout.flush()"
+#endif
+#if FABLE_COMPILER_BEAM
         // io:put_chars writes the binary without a trailing newline.
         Fable.Core.BeamInterop.emitErlStatement s "io:put_chars($0)"
-    #endif
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+#endif
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
         System.Console.Write(s)
-    #endif
+#endif
 
     let isSlow (r: PassedResult) = r.Duration > r.SlowThresholdMs
 
@@ -370,25 +373,25 @@ module internal Advanced =
         |> ignore
 
     let universalRunTests (funcAsync: Async<int>) : int =
-    #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
         // StartAsPromise returns Promise<int>. We can't block on JS, so we chain
         // process.exit on the resolved value - the function return value is ignored.
         let promise = Async.StartAsPromise funcAsync
         emitJsStatement promise "$0.then(exitCode => process.exit(exitCode))"
         0
-    #endif
+#endif
 
-    #if FABLE_COMPILER_BEAM
+#if FABLE_COMPILER_BEAM
         // On the BEAM the run is synchronous; halt/1 exits the VM with the test exit code
         // (the analog of process.exit), so `erl` returns non-zero when tests fail.
         let exitCode = Async.RunSynchronously funcAsync
         Fable.Core.BeamInterop.emitErlStatement exitCode "halt($0)"
         exitCode
-    #endif
+#endif
 
-    #if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_BEAM)
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_BEAM)
         Async.RunSynchronously funcAsync
-    #endif
+#endif
 
     let logger = Parchment.Create(Universal.console ())
 

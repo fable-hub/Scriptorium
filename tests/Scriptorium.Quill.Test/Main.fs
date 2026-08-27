@@ -11,12 +11,15 @@ open type Scriptorium.Quill.Runner
 // ---------------------------------------------------------------------------
 
 /// Run a list of TestCase trees and return the results without printing.
-let private runToResultsWith (configurer: TestConfig -> TestConfig) (tests: TestCase list) : Async<TestResult list> =
+let private runToResultsWith
+    (configurer: TestConfig -> TestConfig)
+    (tests: TestCase list)
+    : Async<TestResult list>
+    =
     let anyFocused = Advanced.hasFocused tests
     Advanced.execute anyFocused (configurer TestConfig.Default) ignore tests
 
-let private runToResults (tests: TestCase list) : Async<TestResult list> =
-    runToResultsWith id tests
+let private runToResults (tests: TestCase list) : Async<TestResult list> = runToResultsWith id tests
 
 // ---------------------------------------------------------------------------
 // Assertion helpers on TestResult
@@ -147,7 +150,11 @@ let main _ =
 
                                     assertThat
                                         (pathOf results[0])
-                                        (isEqualTo [ "MyList"; "t" ])
+                                        (isEqualTo
+                                            [
+                                                "MyList"
+                                                "t"
+                                            ])
                                 }
                         )
 
@@ -166,8 +173,7 @@ let main _ =
                             "xtest produces Pending result",
                             fun _ ->
                                 async {
-                                    let! results =
-                                        runToResults [ xtest ("skip me", fun _ -> ()) ]
+                                    let! results = runToResults [ xtest ("skip me", fun _ -> ()) ]
 
                                     assertThat results (hasSize 1)
                                     assertThat (isPending results[0]) isTrue
@@ -290,7 +296,10 @@ let main _ =
                                             ]
 
                                     assertThat results (hasSize 2)
-                                    assertThat (results |> List.filter isPending |> List.length) (isEqualTo 2)
+
+                                    assertThat
+                                        (results |> List.filter isPending |> List.length)
+                                        (isEqualTo 2)
                                 }
                         )
 
@@ -387,16 +396,19 @@ let main _ =
                                                         )
                                                         testAsync (
                                                             "t2",
-                                                            fun _ ->
-                                                                async {
-                                                                    order.Add(2)
-                                                                }
+                                                            fun _ -> async { order.Add(2) }
                                                         )
                                                     ]
                                                 )
                                             ]
 
-                                    assertThat (List.ofSeq order) (isEqualTo [ 1; 2 ])
+                                    assertThat
+                                        (List.ofSeq order)
+                                        (isEqualTo
+                                            [
+                                                1
+                                                2
+                                            ])
                                 }
                         )
 
@@ -419,7 +431,8 @@ let main _ =
                                         runToResults [ test ("bad", fun _ -> failwith "x") ]
 
                                     match results[0] with
-                                    | TestResult.Failed r -> assertThat (r.FilePath.Length > 0) isTrue
+                                    | TestResult.Failed r ->
+                                        assertThat (r.FilePath.Length > 0) isTrue
                                     | other -> failwithf "Expected Failed, got %A" other
                                 }
                         )
@@ -453,10 +466,7 @@ let main _ =
                             fun _ ->
                                 async {
                                     let! results =
-                                        runToResults
-                                            [
-                                                test ("skip me", skipIf true, fun _ -> ())
-                                            ]
+                                        runToResults [ test ("skip me", skipIf true, fun _ -> ()) ]
 
                                     assertThat results (hasSize 1)
                                     assertThat (isSkipped results[0]) isTrue
@@ -468,10 +478,7 @@ let main _ =
                             fun _ ->
                                 async {
                                     let! results =
-                                        runToResults
-                                            [
-                                                test ("run me", skipIf false, fun _ -> ())
-                                            ]
+                                        runToResults [ test ("run me", skipIf false, fun _ -> ()) ]
 
                                     assertThat results (hasSize 1)
                                     assertThat (isPassed results[0]) isTrue
@@ -486,7 +493,11 @@ let main _ =
                                     let! results =
                                         runToResults
                                             [
-                                                test ("composed", skipIf false >> timeout 1000, fun _ -> ())
+                                                test (
+                                                    "composed",
+                                                    skipIf false >> timeout 1000,
+                                                    fun _ -> ()
+                                                )
                                             ]
 
                                     assertThat results (hasSize 1)
@@ -527,7 +538,9 @@ let main _ =
                                                         // Busy-wait long enough to exceed the 1ms timeout.
                                                         // Uses DateTime so it works on both .NET and JavaScript.
                                                         let start = System.DateTime.UtcNow
-                                                        while (System.DateTime.UtcNow - start).TotalMilliseconds < 50.0 do
+
+                                                        while (System.DateTime.UtcNow - start)
+                                                            .TotalMilliseconds < 50.0 do
                                                             ()
                                                 )
                                             ]
@@ -543,9 +556,7 @@ let main _ =
                                 async {
                                     let! results =
                                         runToResults
-                                            [
-                                                test ("platform", skipIfJavaScript, fun _ -> ())
-                                            ]
+                                            [ test ("platform", skipIfJavaScript, fun _ -> ()) ]
 
                                     assertThat results (hasSize 1)
 
@@ -563,9 +574,7 @@ let main _ =
                                 async {
                                     let! results =
                                         runToResults
-                                            [
-                                                test ("platform", skipIfDotNet, fun _ -> ())
-                                            ]
+                                            [ test ("platform", skipIfDotNet, fun _ -> ()) ]
 
                                     assertThat results (hasSize 1)
 
@@ -593,7 +602,9 @@ let main _ =
                             fun _ ->
                                 async {
                                     let! results =
-                                        runToResultsWith (slowThreshold 500) [ test ("t", fun _ -> ()) ]
+                                        runToResultsWith
+                                            (slowThreshold 500)
+                                            [ test ("t", fun _ -> ()) ]
 
                                     assertThat (slowThresholdOf results[0]) (isEqualTo 500)
                                 }
@@ -606,7 +617,13 @@ let main _ =
                                     let! results =
                                         runToResultsWith
                                             (slowThreshold 500)
-                                            [ testList ("list", slowThreshold 200, [ test ("t", fun _ -> ()) ]) ]
+                                            [
+                                                testList (
+                                                    "list",
+                                                    slowThreshold 200,
+                                                    [ test ("t", fun _ -> ()) ]
+                                                )
+                                            ]
 
                                     assertThat (slowThresholdOf results[0]) (isEqualTo 200)
                                 }
@@ -638,7 +655,12 @@ let main _ =
                                     let! results =
                                         runToResultsWith
                                             (timeout 50)
-                                            [ testAsync ("slow", fun _ -> async { do! Async.Sleep 500 }) ]
+                                            [
+                                                testAsync (
+                                                    "slow",
+                                                    fun _ -> async { do! Async.Sleep 500 }
+                                                )
+                                            ]
 
                                     assertThat (isFailed results[0]) isTrue
                                 }
@@ -655,7 +677,12 @@ let main _ =
                                                 testList (
                                                     "list",
                                                     timeout 2000,
-                                                    [ testAsync ("t", fun _ -> async { do! Async.Sleep 100 }) ]
+                                                    [
+                                                        testAsync (
+                                                            "t",
+                                                            fun _ -> async { do! Async.Sleep 100 }
+                                                        )
+                                                    ]
                                                 )
                                             ]
 
@@ -673,7 +700,13 @@ let main _ =
                                                 testList (
                                                     "list",
                                                     timeout 50,
-                                                    [ testAsync ("t", timeout 2000, fun _ -> async { do! Async.Sleep 100 }) ]
+                                                    [
+                                                        testAsync (
+                                                            "t",
+                                                            timeout 2000,
+                                                            fun _ -> async { do! Async.Sleep 100 }
+                                                        )
+                                                    ]
                                                 )
                                             ]
 
