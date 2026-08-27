@@ -103,9 +103,12 @@ module Prelude =
         if Compiler.isJavaScript || Compiler.isTypeScript then
             emitJsExpr () "globalThis.navigator?.hardwareConcurrency ?? 4"
         elif Compiler.isPython then
+            // process_cpu_count() is 3.13+; sched_getaffinity is Linux-only. Both see the CPUs the
+            // process may use, which cpu_count() - the last resort - does not: under an affinity
+            // mask it reports the whole machine.
             Fable.Core.PyInterop.emitPyExpr
                 ()
-                "(getattr(__import__('os'), 'process_cpu_count', None) or __import__('os').cpu_count)() or 4"
+                "(getattr(__import__('os'), 'process_cpu_count', None) or (getattr(__import__('os'), 'sched_getaffinity', None) and (lambda: len(__import__('os').sched_getaffinity(0)))) or __import__('os').cpu_count)() or 4"
         elif Compiler.isBeam then
             Fable.Core.BeamInterop.emitErlExpr () "erlang:system_info(schedulers_online)"
         else
