@@ -170,19 +170,82 @@ module internal Advanced =
             return List.ofSeq results
         }
 
+    /// Runs `jobs` with at most `maxParallel` of them in flight, returning the results in the order
+    /// the jobs were given.
+    ///
+    /// The jobs are dealt round-robin into `maxParallel` lanes; a lane awaits its own jobs one after
+    /// another, and the lanes themselves run in parallel. With 7 jobs and 3 lanes:
+    ///
+    ///     lane 0 <- jobs 0, 3, 6
+    ///     lane 1 <- jobs 1, 4
+    ///     lane 2 <- jobs 2, 5
+    ///
+    /// so at most 3 jobs are ever executing. A shared work queue would balance the load better, but
+    /// it needs an atomic read-modify-write on the cursor and the five targets do not agree on what
+    /// that is: fable-library has no `Interlocked`, and BEAM jobs run in heap-isolated processes
+    /// whose writes the parent cannot see. Lanes need no shared state at all.
+    ///
+    /// Dealing round-robin rather than in contiguous blocks is what keeps that static split
+    /// tolerable: slow tests tend to sit next to each other in a file, and consecutive jobs land in
+    /// different lanes.
+    let runBounded (maxParallel: int) (jobs: Async<'a list> list) : Async<'a list> =
+        // Down to the job count so no lane is left empty, up to 1 so an empty `jobs` - or a
+        // nonsensical `maxParallel` of zero - still yields a runnable lane.
+        let lanes = max 1 (min maxParallel (List.length jobs))
+
+        if lanes = 1 then
+            runSequentially jobs
+        else
+            let indexed = List.indexed jobs
+
+            // One lane: its share of the jobs, awaited strictly in turn, so a lane never overlaps
+            // itself. Each result is tagged with the job's original position for the sort below.
+            let lane (laneIndex: int) =
+                async {
+                    let collected = ResizeArray()
+
+                    for index, job in indexed |> List.filter (fun (i, _) -> i % lanes = laneIndex) do
+                        let! result = job
+                        collected.Add(index, result)
+
+                    return List.ofSeq collected
+                }
+
+            async {
+                // The one and only Async.Parallel in the runner, over exactly `lanes` items - which
+                // is what makes the bound global. Calling it per test list instead, as this used to,
+                // bounds nothing: fifteen lists each spawning their children is fifteen times the
+                // intended width.
+                let! laneResults = List.init lanes lane |> Async.Parallel
+
+                return
+                    laneResults
+                    |> List.ofArray
+                    |> List.concat
+                    // Lanes hand back 0,3,6 then 1,4 then 2,5 - the sort puts the jobs back in
+                    // declaration order. `collect` then flattens because one job yields a list of
+                    // results, not one: a leaf yields its own, a sequenced list all its children's.
+                    |> List.sortBy fst
+                    |> List.collect snd
+            }
+
     let execute
         (anyFocused: bool)
         (globalConfig: TestConfig)
+        (maxParallel: int)
         (onResult: TestResult -> unit)
         (tests: TestCase list)
         : Async<TestResult list>
         =
-        let rec run
+        // Splits the tree into independently schedulable jobs, in tree order, so the bound on how
+        // many run at once is global rather than per list. A sequenced list collapses to a single
+        // job chaining its children, which is what keeps its ordering under that bound.
+        let rec jobsFor
             (path: string list)
             (focusedAncestor: bool)
             (inheritedConfig: TestConfig)
             (test: TestCase)
-            : Async<TestResult list>
+            : Async<TestResult list> list
             =
             // Handles the full leaf lifecycle: pending/skip checks, stopwatch, result building,
             // and error handling.
@@ -240,14 +303,48 @@ module internal Advanced =
                             return! report (failed ex.Message)
                     }
 
-            async {
-                match test with
-                | TestCase.SyncTest ctx ->
-                    return!
-                        runLeaf
-                            ctx
-                            (fun effectiveConfig sw ->
-                                async {
+            match test with
+            | TestCase.SyncTest ctx ->
+                [
+                    async {
+                        return!
+                            runLeaf
+                                ctx
+                                (fun effectiveConfig sw ->
+                                    async {
+                                        let testCtx =
+                                            {
+                                                Name = ctx.Name
+                                                FilePath = ctx.FilePath
+                                                Path = List.rev (ctx.Name :: path)
+                                            }
+
+                                        ctx.Body(testCtx)
+                                        // Retroactive timeout check: synchronous code cannot be
+                                        // interrupted mid-execution, so we check the wall clock
+                                        // after the body returns and fail if it ran over budget.
+                                        let elapsed = sw.ElapsedMs()
+
+                                        match effectiveConfig.TimeoutMs with
+                                        | Some ms when elapsed >= ms ->
+                                            raise (
+                                                System.TimeoutException(
+                                                    $"Test timed out after {ms}ms"
+                                                )
+                                            )
+                                        | _ -> ()
+                                    }
+                                )
+                    }
+                ]
+
+            | TestCase.AsyncTest ctx ->
+                [
+                    async {
+                        return!
+                            runLeaf
+                                ctx
+                                (fun effectiveConfig _ ->
                                     let testCtx =
                                         {
                                             Name = ctx.Name
@@ -255,79 +352,47 @@ module internal Advanced =
                                             Path = List.rev (ctx.Name :: path)
                                         }
 
-                                    ctx.Body(testCtx)
-                                    // Retroactive timeout check: synchronous code cannot be
-                                    // interrupted mid-execution, so we check the wall clock
-                                    // after the body returns and fail if it ran over budget.
-                                    let elapsed = sw.ElapsedMs()
-
                                     match effectiveConfig.TimeoutMs with
-                                    | Some ms when elapsed >= ms ->
-                                        raise (
-                                            System.TimeoutException($"Test timed out after {ms}ms")
-                                        )
-                                    | _ -> ()
-                                }
-                            )
+                                    | None -> ctx.Body(testCtx)
+                                    | Some ms -> withTimeout ms (ctx.Body(testCtx))
+                                )
+                    }
+                ]
 
-                | TestCase.AsyncTest ctx ->
-                    return!
-                        runLeaf
-                            ctx
-                            (fun effectiveConfig _ ->
-                                let testCtx =
-                                    {
-                                        Name = ctx.Name
-                                        FilePath = ctx.FilePath
-                                        Path = List.rev (ctx.Name :: path)
-                                    }
+            | TestCase.TestList ctx ->
+                let listConfig = ctx.Configurer inheritedConfig
+                let currentPath = ctx.Name :: path
 
-                                match effectiveConfig.TimeoutMs with
-                                | None -> ctx.Body(testCtx)
-                                | Some ms -> withTimeout ms (ctx.Body(testCtx))
-                            )
+                match ctx.Mark with
+                | TestMark.Pending ->
+                    let rec collectPending p tc =
+                        match tc with
+                        | TestCase.SyncTest def -> [ TestResult.Pending(def.Name :: p) ]
+                        | TestCase.AsyncTest def -> [ TestResult.Pending(def.Name :: p) ]
+                        | TestCase.TestList def ->
+                            def.Tests |> List.collect (collectPending (def.Name :: p))
 
-                | TestCase.TestList ctx ->
-                    let listConfig = ctx.Configurer inheritedConfig
-                    let currentPath = ctx.Name :: path
+                    [
+                        async {
+                            let pending = ctx.Tests |> List.collect (collectPending currentPath)
+                            pending |> List.iter onResult
+                            return pending
+                        }
+                    ]
 
-                    let schedule (asyncs: Async<TestResult list> list) : Async<TestResult list> =
-                        if ctx.IsSequential then
-                            runSequentially asyncs
-                        else
-                            async {
-                                let! arr = Async.Parallel asyncs
-                                return List.ofArray arr |> List.concat
-                            }
+                | TestMark.Focused
+                | TestMark.Normal ->
+                    let focused = focusedAncestor || ctx.Mark = TestMark.Focused
 
-                    match ctx.Mark with
-                    | TestMark.Pending ->
-                        let rec collectPending p tc =
-                            match tc with
-                            | TestCase.SyncTest def -> [ TestResult.Pending(def.Name :: p) ]
-                            | TestCase.AsyncTest def -> [ TestResult.Pending(def.Name :: p) ]
-                            | TestCase.TestList def ->
-                                def.Tests |> List.collect (collectPending (def.Name :: p))
+                    let childJobs =
+                        ctx.Tests |> List.collect (jobsFor currentPath focused listConfig)
 
-                        let pending = ctx.Tests |> List.collect (collectPending currentPath)
-                        pending |> List.iter onResult
-                        return pending
+                    if ctx.IsSequential then
+                        [ runSequentially childJobs ]
+                    else
+                        childJobs
 
-                    | TestMark.Focused ->
-                        return! ctx.Tests |> List.map (run currentPath true listConfig) |> schedule
-
-                    | TestMark.Normal ->
-                        return!
-                            ctx.Tests
-                            |> List.map (run currentPath focusedAncestor listConfig)
-                            |> schedule
-            }
-
-        async {
-            let! resultLists = tests |> List.map (run [] false globalConfig) |> Async.Parallel
-
-            return resultLists |> List.ofArray |> List.concat
-        }
+        tests |> List.collect (jobsFor [] false globalConfig) |> runBounded maxParallel
 
     /// Raw write without a trailing newline - used for the live dot progress line.
     let writeRaw (s: string) : unit =
@@ -477,7 +542,7 @@ type Runner =
                 | TestResult.Pending _ -> writeRaw (yellow "*")
 
             async {
-                let! results = execute anyFocused globalConfig printDot tests
+                let! results = execute anyFocused globalConfig processorCount printDot tests
 
                 logger.info ""
                 logger.info ""

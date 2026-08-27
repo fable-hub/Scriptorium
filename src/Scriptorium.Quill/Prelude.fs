@@ -92,6 +92,21 @@ module Prelude =
         System.Environment.GetEnvironmentVariable("CI") |> isNull |> not
 #endif
 
+    /// How many tests the runtime can genuinely run at once. Every target reports the count the
+    /// process is actually allowed to use rather than the machine's core count, so a container or
+    /// a CI runner with a restricted quota is respected.
+    let processorCount: int =
+        if Compiler.isJavaScript || Compiler.isTypeScript then
+            emitJsExpr () "globalThis.navigator?.hardwareConcurrency ?? 4"
+        elif Compiler.isPython then
+            Fable.Core.PyInterop.emitPyExpr
+                ()
+                "(getattr(__import__('os'), 'process_cpu_count', None) or __import__('os').cpu_count)() or 4"
+        elif Compiler.isBeam then
+            Fable.Core.BeamInterop.emitErlExpr () "erlang:system_info(schedulers_online)"
+        else
+            System.Environment.ProcessorCount
+
     /// Put the terminal into a state where the runner's output renders correctly.
     /// No-op everywhere except BEAM, where `standard_io` and `standard_error` default to
     /// latin1 under `erl -noshell`: any codepoint > 255 is then printed as an escape (U+2717

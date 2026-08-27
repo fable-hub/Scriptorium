@@ -17,9 +17,14 @@ let private runToResultsWith
     : Async<TestResult list>
     =
     let anyFocused = Advanced.hasFocused tests
-    Advanced.execute anyFocused (configurer TestConfig.Default) ignore tests
+    Advanced.execute anyFocused (configurer TestConfig.Default) Prelude.processorCount ignore tests
 
 let private runToResults (tests: TestCase list) : Async<TestResult list> = runToResultsWith id tests
+
+/// Run a list of TestCase trees under an explicit cap on how many run at once.
+let private runToResultsBounded (maxParallel: int) (tests: TestCase list) : Async<TestResult list> =
+    let anyFocused = Advanced.hasFocused tests
+    Advanced.execute anyFocused TestConfig.Default maxParallel ignore tests
 
 // ---------------------------------------------------------------------------
 // Assertion helpers on TestResult
@@ -760,6 +765,136 @@ let main _ =
                                             ]
 
                                     assertThat (skippedCount results) (isEqualTo 2)
+                                }
+                        )
+
+                    ]
+                )
+
+                // ------------------------------------------------------------------
+                // Bounded parallelism
+                // ------------------------------------------------------------------
+
+                testList (
+                    "parallelism cap",
+                    [
+
+                        testAsync (
+                            "a cap of one runs the tests one after another",
+                            // Same reason as testSequenced above: on the BEAM the jobs run in
+                            // spawned, heap-isolated processes, so `trace` never sees their writes.
+                            skipIfBeam,
+                            fun _ ->
+                                async {
+                                    let trace = System.Collections.Generic.List<string>()
+
+                                    let recorded name =
+                                        testAsync (
+                                            name,
+                                            fun _ ->
+                                                async {
+                                                    trace.Add($"enter %s{name}")
+                                                    do! Async.Sleep 20
+                                                    trace.Add($"exit %s{name}")
+                                                }
+                                        )
+
+                                    let! _ =
+                                        runToResultsBounded
+                                            1
+                                            [
+                                                recorded "a"
+                                                recorded "b"
+                                            ]
+
+                                    assertThat
+                                        (List.ofSeq trace)
+                                        (isEqualTo
+                                            [
+                                                "enter a"
+                                                "exit a"
+                                                "enter b"
+                                                "exit b"
+                                            ])
+                                }
+                        )
+
+                        testAsync (
+                            "results keep declaration order whatever the cap",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResultsBounded
+                                            2
+                                            [
+                                                testList (
+                                                    "list",
+                                                    [
+                                                        testAsync (
+                                                            "a",
+                                                            fun _ -> async { do! Async.Sleep 30 }
+                                                        )
+                                                        test ("b", fun _ -> ())
+                                                        testAsync (
+                                                            "c",
+                                                            fun _ -> async { do! Async.Sleep 10 }
+                                                        )
+                                                        test ("d", fun _ -> ())
+                                                    ]
+                                                )
+                                            ]
+
+                                    assertThat
+                                        (results |> List.map (pathOf >> List.last))
+                                        (isEqualTo
+                                            [
+                                                "a"
+                                                "b"
+                                                "c"
+                                                "d"
+                                            ])
+                                }
+                        )
+
+                        testAsync (
+                            "a sequenced list is one job, so the cap cannot split it",
+                            skipIfBeam,
+                            fun _ ->
+                                async {
+                                    let trace = System.Collections.Generic.List<string>()
+
+                                    let step name =
+                                        testAsync (
+                                            name,
+                                            fun _ ->
+                                                async {
+                                                    do! Async.Sleep 20
+                                                    trace.Add(name)
+                                                }
+                                        )
+
+                                    let! _ =
+                                        runToResultsBounded
+                                            4
+                                            [
+                                                testSequenced (
+                                                    "seq",
+                                                    [
+                                                        step "a"
+                                                        step "b"
+                                                        step "c"
+                                                    ]
+                                                )
+                                            ]
+
+                                    assertThat
+                                        (List.ofSeq trace)
+                                        (isEqualTo
+                                            [
+                                                "a"
+                                                "b"
+                                                "c"
+                                            ])
                                 }
                         )
 
