@@ -16,9 +16,13 @@ open type Scriptorium.Quill.Runner
 ```fsharp
 Runner.runTests (tests: TestCase list) : int
 Runner.runTests (test: TestCase) : int
+Runner.runTests (reporters: Reporter list, tests: TestCase list) : int
+Runner.runTests (reporters: Reporter list, test: TestCase) : int
 ```
 
 Runs the test suite with default global configuration. Returns the exit code (0 = all passed, 1 = failures or CI guard triggered).
+
+The overloads without a reporter list use `[ Reporters.console ]`, which produces the terminal output shown above. See [Reporters](/Scriptorium/quill/reporters/) to register your own.
 
 ```fsharp
 [<EntryPoint>]
@@ -33,6 +37,8 @@ let main _ =
 ```fsharp
 Runner.runTestsWith (configurer: TestConfig -> TestConfig, tests: TestCase list) : int
 Runner.runTestsWith (configurer: TestConfig -> TestConfig, test: TestCase) : int
+Runner.runTestsWith (configurer: TestConfig -> TestConfig, reporters: Reporter list, tests: TestCase list) : int
+Runner.runTestsWith (configurer: TestConfig -> TestConfig, reporters: Reporter list, test: TestCase) : int
 ```
 
 Runs with a custom global configuration. The configurer is applied to `TestConfig.Default` to produce the global config.
@@ -45,3 +51,14 @@ let main _ =
     ])
 ```
 
+## Reporters
+
+All terminal output is produced by `Reporters.console`, an ordinary reporter with no special status. Register your own to export results elsewhere - for example JUnit XML for CI.
+
+```fsharp
+[<EntryPoint>]
+let main _ =
+    Runner.runTests ([ Reporters.console; myReporter ], tests)
+```
+
+See [Reporters](/Scriptorium/quill/reporters/) for the hooks, the run report, and a worked JUnit XML example.

@@ -12,6 +12,7 @@
     <Compile Include="src/content/docs/nib/combinators.source.fs" />
     <Compile Include="src/content/docs/nib-browser/overview.source.fs" />
     <Compile Include="src/content/docs/quill/overview.source.fs" />
+    <Compile Include="src/content/docs/quill/reporters.source.fs" />
     <Compile Include="src/content/docs/hedgehog/overview.source.fs" />
   </ItemGroup>
 

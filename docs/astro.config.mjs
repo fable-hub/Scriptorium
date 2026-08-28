@@ -77,6 +77,7 @@ export default defineConfig({
                         'quill/test-dsl',
                         'quill/configuration',
                         'quill/runner',
+                        'quill/reporters',
                     ],
                 },
                 {
