@@ -113,3 +113,20 @@ type TestResult =
     | Failed of FailedResult
     | Skipped of SkippedResult // runtime/conditional skip (skipIf, focus mode)
     | Pending of PendingResult // author-marked (xtest, todo)
+
+/// Everything a run produced: the individual results plus the run-level facts
+/// a report writer needs.
+type TestRunReport =
+    {
+        /// Results in declaration order.
+        Results: TestResult list
+        /// Wall-clock time the run started.
+        StartTime: System.DateTime
+        /// Total run duration in milliseconds.
+        Duration: int
+        PassedCount: int
+        FailedCount: int
+        SkippedCount: int
+        PendingCount: int
+        TotalCount: int
+    }

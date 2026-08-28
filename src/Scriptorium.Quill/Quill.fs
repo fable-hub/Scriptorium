@@ -619,7 +619,19 @@ type Runner =
 
                 let total = passed + failed + skipped + pending
 
-                let totalMs = sw.ElapsedMs()
+                let report =
+                    {
+                        Results = results
+                        StartTime = now
+                        Duration = sw.ElapsedMs()
+                        PassedCount = passed
+                        FailedCount = failed
+                        SkippedCount = skipped
+                        PendingCount = pending
+                        TotalCount = total
+                    }
+
+                let totalMs = report.Duration
 
                 let durationStr =
                     if totalMs < 1000 then
