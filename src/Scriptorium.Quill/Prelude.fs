@@ -132,3 +132,73 @@ module Prelude =
 #if !FABLE_COMPILER_BEAM
         ()
 #endif
+
+    /// The runtime type name of an exception, or <c>None</c> when the target cannot report one.
+    let exceptionTypeName (ex: exn) : string option =
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+        let name: string =
+            emitJsExpr ex "($0 && $0.constructor && $0.constructor.name) || ''"
+
+        match name with
+        | "" -> None
+        | name -> Some name
+#endif
+
+#if FABLE_COMPILER_PYTHON
+        let name: string = Fable.Core.PyInterop.emitPyExpr ex "type($0).__name__"
+
+        match name with
+        | "" -> None
+        | name -> Some name
+#endif
+
+#if FABLE_COMPILER_BEAM
+        // Fable lowers every F# exception to a bare `#{message => Binary}` map - no type tag - so
+        // there is nothing on the term to name.
+        ignore ex
+        None
+#endif
+
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+        match ex.GetType().FullName with
+        | null
+        | "" -> None
+        | name -> Some name
+#endif
+
+    /// The stack trace of an exception, or <c>None</c> when the target records none.
+    let exceptionStackTrace (ex: exn) : string option =
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT
+        // fable-library's `Exception` is deliberately not derived from `Error` (fable#2160), so
+        // only a natively thrown error carries a stack.
+        let trace: string = emitJsExpr ex "($0 && $0.stack) || ''"
+
+        match trace with
+        | "" -> None
+        | trace -> Some trace
+#endif
+
+#if FABLE_COMPILER_PYTHON
+        let trace: string =
+            Fable.Core.PyInterop.emitPyExpr
+                ex
+                "''.join(__import__('traceback').format_exception(type($0), $0, $0.__traceback__))"
+
+        match trace with
+        | "" -> None
+        | trace -> Some trace
+#endif
+
+#if FABLE_COMPILER_BEAM
+        // The BEAM keeps the stacktrace on the catch clause, not on the exception term, so by the
+        // time Fable hands the value to an F# `with` binding it is already gone.
+        ignore ex
+        None
+#endif
+
+#if !(FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || FABLE_COMPILER_PYTHON || FABLE_COMPILER_BEAM)
+        match ex.StackTrace with
+        | null
+        | "" -> None
+        | trace -> Some trace
+#endif

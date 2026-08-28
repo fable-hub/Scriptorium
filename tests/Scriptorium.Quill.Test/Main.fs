@@ -529,6 +529,63 @@ let main _ =
                 )
 
                 // ------------------------------------------------------------------
+                // Failure diagnostics
+                // ------------------------------------------------------------------
+
+                testList (
+                    "failure diagnostics",
+                    [
+
+                        testAsync (
+                            "Failed result names the exception type where the target reports one",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults [ test ("bad", fun _ -> failwith "boom") ]
+
+                                    match results[0] with
+                                    | TestResult.Failed r ->
+                                        match Prelude.currentPlatform with
+                                        | DotNet ->
+                                            assertThat
+                                                r.ExceptionType
+                                                (isEqualTo (Some "System.Exception"))
+                                        | JavaScript
+                                        | Python ->
+                                            assertThat
+                                                r.ExceptionType
+                                                (isEqualTo (Some "Exception"))
+                                        // Fable lowers every F# exception to a bare map with no
+                                        // type tag, so there is nothing to name.
+                                        | Beam -> assertThat r.ExceptionType Option.isNone
+                                    | other -> failwithf "Expected Failed, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "Failed result carries a stack trace where the target records one",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults [ test ("bad", fun _ -> failwith "boom") ]
+
+                                    match results[0] with
+                                    | TestResult.Failed r ->
+                                        match Prelude.currentPlatform with
+                                        | DotNet
+                                        | Python -> assertThat r.StackTrace Option.isSome
+                                        // fable-library's Exception is not derived from Error, and
+                                        // the BEAM keeps the stacktrace on the catch clause.
+                                        | JavaScript
+                                        | Beam -> assertThat r.StackTrace Option.isNone
+                                    | other -> failwithf "Expected Failed, got %A" other
+                                }
+                        )
+
+                    ]
+                )
+
+                // ------------------------------------------------------------------
                 // Skip reason
                 // ------------------------------------------------------------------
 

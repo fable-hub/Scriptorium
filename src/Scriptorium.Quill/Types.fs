@@ -97,6 +97,10 @@ type FailedResult =
     {
         Path: string list
         Message: string
+        /// Runtime type name of the exception, when the target can report one.
+        ExceptionType: string option
+        /// Stack trace of the exception, when the target records one.
+        StackTrace: string option
         FilePath: string
         LineNumber: int
         Duration: int

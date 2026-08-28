@@ -298,11 +298,13 @@ module internal Advanced =
                                 SlowThresholdMs = effectiveConfig.SlowThresholdMs
                             }
 
-                    let failed msg =
+                    let failed (ex: exn) =
                         TestResult.Failed
                             {
                                 Path = currentPath
-                                Message = msg
+                                Message = ex.Message
+                                ExceptionType = exceptionTypeName ex
+                                StackTrace = exceptionStackTrace ex
                                 FilePath = def.FilePath
                                 LineNumber = def.LineNumber
                                 Duration = sw.ElapsedMs()
@@ -314,7 +316,7 @@ module internal Advanced =
                             do! makeBody effectiveConfig sw
                             return! report (passed ())
                         with ex ->
-                            return! report (failed ex.Message)
+                            return! report (failed ex)
                     }
 
             match test with
