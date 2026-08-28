@@ -21,6 +21,8 @@ let private runToResultsWith
 
 let private runToResults (tests: TestCase list) : Async<TestResult list> = runToResultsWith id tests
 
+let private now = System.DateTime.Now
+
 /// Run a list of TestCase trees under an explicit cap on how many run at once.
 let private runToResultsBounded (maxParallel: int) (tests: TestCase list) : Async<TestResult list> =
     let anyFocused = Advanced.hasFocused tests
@@ -579,6 +581,140 @@ let main _ =
                                         | JavaScript
                                         | Beam -> assertThat r.StackTrace Option.isNone
                                     | other -> failwithf "Expected Failed, got %A" other
+                                }
+                        )
+
+                    ]
+                )
+
+                // ------------------------------------------------------------------
+                // Reporters
+                // ------------------------------------------------------------------
+
+                testList (
+                    "reporters",
+                    [
+
+                        testAsync (
+                            "every registered reporter sees every result",
+                            skipIfBeam,
+                            fun _ ->
+                                async {
+                                    let first = ResizeArray()
+                                    let second = ResizeArray()
+
+                                    let reporters =
+                                        [
+                                            { Reporter.Default with
+                                                OnResult = fun r -> first.Add r
+                                            }
+                                            { Reporter.Default with
+                                                OnResult = fun r -> second.Add r
+                                            }
+                                        ]
+
+                                    let! results =
+                                        Advanced.execute
+                                            false
+                                            TestConfig.Default
+                                            Prelude.processorCount
+                                            (Advanced.notifyResult reporters)
+                                            [
+                                                test ("a", fun _ -> ())
+                                                test ("b", fun _ -> failwith "boom")
+                                            ]
+
+                                    assertThat results.Length (isEqualTo 2)
+                                    assertThat first.Count (isEqualTo 2)
+                                    assertThat second.Count (isEqualTo 2)
+                                }
+                        )
+
+                        testAsync (
+                            "every registered reporter sees the run report",
+                            fun _ ->
+                                async {
+                                    let seen = ResizeArray()
+
+                                    let reporters =
+                                        [
+                                            { Reporter.Default with
+                                                OnRunComplete = fun r -> seen.Add r.TotalCount
+                                            }
+                                            { Reporter.Default with
+                                                OnRunComplete = fun r -> seen.Add(r.TotalCount * 10)
+                                            }
+                                        ]
+
+                                    let! results = runToResults [ test ("a", fun _ -> ()) ]
+                                    let report = Advanced.buildReport false now 0 results
+                                    Advanced.notifyRunComplete reporters report
+
+                                    assertThat
+                                        (List.ofSeq seen)
+                                        (isEqualTo
+                                            [
+                                                1
+                                                10
+                                            ])
+                                }
+                        )
+
+                        testAsync (
+                            "a reporter left at its default is a no-op",
+                            fun _ ->
+                                async {
+                                    let! results = runToResults [ test ("a", fun _ -> ()) ]
+                                    let report = Advanced.buildReport false now 0 results
+
+                                    Advanced.notifyResult [ Reporter.Default ] results[0]
+                                    Advanced.notifyRunComplete [ Reporter.Default ] report
+
+                                    assertThat results.Length (isEqualTo 1)
+                                }
+                        )
+
+                        testAsync (
+                            "the run report counts every outcome",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                test ("pass", fun _ -> ())
+                                                test ("fail", fun _ -> failwith "boom")
+                                                test ("skip", skipIf true, fun _ -> ())
+                                                xtest ("todo", fun _ -> ())
+                                            ]
+
+                                    let report = Advanced.buildReport false now 42 results
+
+                                    assertThat report.PassedCount (isEqualTo 1)
+                                    assertThat report.FailedCount (isEqualTo 1)
+                                    assertThat report.SkippedCount (isEqualTo 1)
+                                    assertThat report.PendingCount (isEqualTo 1)
+                                    assertThat report.TotalCount (isEqualTo 4)
+                                    assertThat report.Duration (isEqualTo 42)
+                                    assertThat report.AnyFocused isFalse
+                                }
+                        )
+
+                        testAsync (
+                            "the run report records that the run was focused",
+                            fun _ ->
+                                async {
+                                    let tests =
+                                        [
+                                            ftest ("focused", fun _ -> ())
+                                            test ("sidelined", fun _ -> ())
+                                        ]
+
+                                    let anyFocused = Advanced.hasFocused tests
+                                    let! results = runToResults tests
+                                    let report = Advanced.buildReport anyFocused now 0 results
+
+                                    assertThat report.AnyFocused isTrue
+                                    assertThat report.Results.Length (isEqualTo 2)
                                 }
                         )
 

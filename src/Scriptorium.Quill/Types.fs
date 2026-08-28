@@ -129,4 +129,22 @@ type TestRunReport =
         SkippedCount: int
         PendingCount: int
         TotalCount: int
+        /// Whether any test or list in the run was focused.
+        AnyFocused: bool
     }
+
+/// Observes a run
+type Reporter =
+    {
+        /// Called as each result is produced, in completion order. On BEAM this runs inside the
+        /// spawned job's process, so it can write output but cannot reach state owned by the run.
+        OnResult: TestResult -> unit
+        /// Called once when the run has finished, with the results in declaration order.
+        OnRunComplete: TestRunReport -> unit
+    }
+
+    static member Default =
+        {
+            OnResult = ignore
+            OnRunComplete = ignore
+        }

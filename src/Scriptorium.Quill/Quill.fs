@@ -573,11 +573,144 @@ module internal Advanced =
 
     let logger = Parchment.Create(Universal.console ())
 
+    let printDot (result: TestResult) : unit =
+        match result with
+        | TestResult.Passed r -> writeRaw (passedColor r "·")
+        | TestResult.Failed _ -> writeRaw (red "x")
+        | TestResult.Skipped _ -> writeRaw (dim "-")
+        | TestResult.Pending _ -> writeRaw (yellow "*")
+
+    let printRunReport (report: TestRunReport) : unit =
+        logger.info ""
+        logger.info ""
+        printResults logger report.Results
+        logger.info ""
+
+        let durationStr =
+            if report.Duration < 1000 then
+                $"{report.Duration}ms"
+            else
+                $"%.2f{(float report.Duration / 1000.0)}s".Replace(".00s", "s")
+
+        let startAt =
+            sprintf
+                "%02d:%02d:%02d"
+                report.StartTime.Hour
+                report.StartTime.Minute
+                report.StartTime.Second
+
+        let parts =
+            [
+                if report.FailedCount > 0 then
+                    red $"{report.FailedCount} failed"
+                if isCI && report.AnyFocused then
+                    red "focused (not allowed in CI)"
+                if report.PassedCount > 0 then
+                    (green >> bold) $"{report.PassedCount} passed"
+                if report.SkippedCount > 0 then
+                    dim $"{report.SkippedCount} skipped"
+                if report.PendingCount > 0 then
+                    yellow $"{report.PendingCount} pending"
+            ]
+            |> String.concat " | "
+
+        let labelTests = dim ("Tests".PadLeft(9))
+        let labelStartAt = dim ("Start at".PadLeft(9))
+        let labelDuration = dim ("Duration".PadLeft(9))
+        let totalStr = dim $"({report.TotalCount})"
+
+        logger.info $"{labelTests}  {parts} {totalStr}"
+        logger.info $"{labelStartAt}  {startAt}"
+        logger.info $"{labelDuration}  {durationStr}"
+        logger.info ""
+
+    /// The CI guard against committed ftest/ftestList. Runs whatever reporters are registered,
+    /// so that dropping the console reporter cannot silently drop the explanation for the
+    /// non-zero exit code.
+    let warnFocusedInCI (report: TestRunReport) : unit =
+        if isCI && report.AnyFocused then
+            logger.warning (
+                red "CI: focused tests detected - ftest/ftestList must not be committed."
+            )
+
+            logger.warning ""
+
+    let buildReport
+        (anyFocused: bool)
+        (startTime: System.DateTime)
+        (duration: int)
+        (results: TestResult list)
+        : TestRunReport
+        =
+        let countOf predicate =
+            results |> List.filter predicate |> List.length
+
+        let passed =
+            countOf (
+                function
+                | TestResult.Passed _ -> true
+                | _ -> false
+            )
+
+        let failed =
+            countOf (
+                function
+                | TestResult.Failed _ -> true
+                | _ -> false
+            )
+
+        let skipped =
+            countOf (
+                function
+                | TestResult.Skipped _ -> true
+                | _ -> false
+            )
+
+        let pending =
+            countOf (
+                function
+                | TestResult.Pending _ -> true
+                | _ -> false
+            )
+
+        {
+            Results = results
+            StartTime = startTime
+            Duration = duration
+            PassedCount = passed
+            FailedCount = failed
+            SkippedCount = skipped
+            PendingCount = pending
+            TotalCount = passed + failed + skipped + pending
+            AnyFocused = anyFocused
+        }
+
+    let notifyResult (reporters: Reporter list) (result: TestResult) : unit =
+        for reporter in reporters do
+            reporter.OnResult result
+
+    let notifyRunComplete (reporters: Reporter list) (report: TestRunReport) : unit =
+        for reporter in reporters do
+            reporter.OnRunComplete report
+
 open Advanced
+
+[<RequireQualifiedAccess>]
+module Reporters =
+
+    /// Writes the run to the terminal: a dot per result as it lands, then the result tree,
+    /// the summary, and the CI guard warning.
+    let console: Reporter =
+        {
+            OnResult = printDot
+            OnRunComplete = printRunReport
+        }
 
 type Runner =
 
-    static member runTestsWith(configurer: TestConfig -> TestConfig, tests: TestCase list) =
+    static member runTestsWith
+        (configurer: TestConfig -> TestConfig, reporters: Reporter list, tests: TestCase list)
+        =
         initTerminal ()
         let duplicates = findDuplicatePaths tests
 
@@ -599,113 +732,19 @@ type Runner =
             let anyFocused = hasFocused tests
             let sw = UniversalStopwatch()
             let now = System.DateTime.Now
-            let startAt = sprintf "%02d:%02d:%02d" now.Hour now.Minute now.Second
-
-            let printDot result =
-                match result with
-                | TestResult.Passed r -> writeRaw (passedColor r "·")
-                | TestResult.Failed _ -> writeRaw (red "x")
-                | TestResult.Skipped _ -> writeRaw (dim "-")
-                | TestResult.Pending _ -> writeRaw (yellow "*")
 
             async {
-                let! results = execute anyFocused globalConfig processorCount printDot tests
+                let! results =
+                    execute anyFocused globalConfig processorCount (notifyResult reporters) tests
 
-                logger.info ""
-                logger.info ""
-                printResults logger results
-                logger.info ""
-
-                let passed =
-                    results
-                    |> List.sumBy (
-                        function
-                        | TestResult.Passed _ -> 1
-                        | _ -> 0
-                    )
-
-                let failed =
-                    results
-                    |> List.sumBy (
-                        function
-                        | TestResult.Failed _ -> 1
-                        | _ -> 0
-                    )
-
-                let skipped =
-                    results
-                    |> List.sumBy (
-                        function
-                        | TestResult.Skipped _ -> 1
-                        | _ -> 0
-                    )
-
-                let pending =
-                    results
-                    |> List.sumBy (
-                        function
-                        | TestResult.Pending _ -> 1
-                        | _ -> 0
-                    )
-
-                let total = passed + failed + skipped + pending
-
-                let report =
-                    {
-                        Results = results
-                        StartTime = now
-                        Duration = sw.ElapsedMs()
-                        PassedCount = passed
-                        FailedCount = failed
-                        SkippedCount = skipped
-                        PendingCount = pending
-                        TotalCount = total
-                    }
-
-                let totalMs = report.Duration
-
-                let durationStr =
-                    if totalMs < 1000 then
-                        $"{totalMs}ms"
-                    else
-                        $"%.2f{(float totalMs / 1000.0)}s".Replace(".00s", "s")
-
-                let parts =
-                    [
-                        if failed > 0 then
-                            red $"{failed} failed"
-                        if isCI && anyFocused then
-                            red "focused (not allowed in CI)"
-                        if passed > 0 then
-                            (green >> bold) $"{passed} passed"
-                        if skipped > 0 then
-                            dim $"{skipped} skipped"
-                        if pending > 0 then
-                            yellow $"{pending} pending"
-                    ]
-                    |> String.concat " | "
-
-                let labelTests = dim ("Tests".PadLeft(9))
-                let labelStartAt = dim ("Start at".PadLeft(9))
-                let labelDuration = dim ("Duration".PadLeft(9))
-                let totalStr = dim $"({total})"
-
-                logger.info $"{labelTests}  {parts} {totalStr}"
-                logger.info $"{labelStartAt}  {startAt}"
-                logger.info $"{labelDuration}  {durationStr}"
-                logger.info ""
-
-                if isCI && anyFocused then
-                    logger.warning (
-                        red "CI: focused tests detected - ftest/ftestList must not be committed."
-                    )
-
-                    logger.warning ""
+                let report = buildReport anyFocused now (sw.ElapsedMs()) results
+                notifyRunComplete reporters report
+                warnFocusedInCI report
 
                 let exitCode =
-                    if failed <> 0 then
+                    if report.FailedCount <> 0 then
                         1
-                    else if isCI && anyFocused then
+                    else if isCI && report.AnyFocused then
                         1
                     else
                         0
@@ -714,9 +753,25 @@ type Runner =
             }
             |> universalRunTests
 
+    static member runTestsWith
+        (configurer: TestConfig -> TestConfig, reporters: Reporter list, test: TestCase)
+        =
+        Runner.runTestsWith (configurer, reporters, [ test ])
+
+    static member runTestsWith(configurer: TestConfig -> TestConfig, tests: TestCase list) =
+        Runner.runTestsWith (configurer, [ Reporters.console ], tests)
+
     static member runTestsWith(configurer: TestConfig -> TestConfig, test: TestCase) =
-        Runner.runTestsWith (configurer, [ test ])
+        Runner.runTestsWith (configurer, [ Reporters.console ], [ test ])
 
-    static member runTests(tests: TestCase list) = Runner.runTestsWith (id, tests)
+    static member runTests(reporters: Reporter list, tests: TestCase list) =
+        Runner.runTestsWith (id, reporters, tests)
 
-    static member runTests(test: TestCase) = Runner.runTestsWith (id, [ test ])
+    static member runTests(reporters: Reporter list, test: TestCase) =
+        Runner.runTestsWith (id, reporters, [ test ])
+
+    static member runTests(tests: TestCase list) =
+        Runner.runTestsWith (id, [ Reporters.console ], tests)
+
+    static member runTests(test: TestCase) =
+        Runner.runTestsWith (id, [ Reporters.console ], [ test ])
