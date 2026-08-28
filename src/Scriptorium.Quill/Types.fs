@@ -61,6 +61,20 @@ and [<RequireQualifiedAccess>] TestCase =
     | AsyncTest of TestDefinition<TestContext -> Async<unit>>
     | TestList of TestListDefinition
 
+/// Why a test was sidelined for this run.
+[<RequireQualifiedAccess>]
+type SkipReason =
+    /// The effective configuration asked for it (e.g. <c>skipIf</c>, <c>skipIfPython</c>).
+    | Configured
+    /// Focus mode is active and this test is neither focused nor under a focused list.
+    | NotFocused
+
+type SkippedResult =
+    {
+        Path: string list
+        Reason: SkipReason
+    }
+
 type PassedResult =
     {
         Path: string list
@@ -82,5 +96,5 @@ type FailedResult =
 type TestResult =
     | Passed of PassedResult
     | Failed of FailedResult
-    | Skipped of path: string list // runtime/conditional skip (skipIf, focus mode)
+    | Skipped of SkippedResult // runtime/conditional skip (skipIf, focus mode)
     | Pending of path: string list // author-marked (xtest, todo)

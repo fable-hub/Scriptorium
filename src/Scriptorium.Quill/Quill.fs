@@ -261,18 +261,21 @@ module internal Advanced =
                     onResult r
                     async { return [ r ] }
 
+                let skipped reason =
+                    TestResult.Skipped
+                        {
+                            Path = currentPath
+                            Reason = reason
+                        }
+
                 // Author explicitly marked this test as pending (xtest / todo).
                 // The body is never executed regardless of focus mode or config.
                 if def.Mark = TestMark.Pending then
                     report (TestResult.Pending currentPath)
-                // Runtime skip: either the configurer set Skip = true (e.g. skipIf),
-                // or focus mode is active and this test is not focused nor under a
-                // focused ancestor - so it is sidelined for this run.
-                elif
-                    effectiveConfig.Skip
-                    || (anyFocused && not focusedAncestor && def.Mark = TestMark.Normal)
-                then
-                    report (TestResult.Skipped currentPath)
+                elif effectiveConfig.Skip then
+                    report (skipped SkipReason.Configured)
+                elif anyFocused && not focusedAncestor && def.Mark = TestMark.Normal then
+                    report (skipped SkipReason.NotFocused)
                 else
                     let sw = UniversalStopwatch()
 
@@ -433,7 +436,7 @@ module internal Advanced =
             match result with
             | TestResult.Passed r -> r.Path
             | TestResult.Failed r -> r.Path
-            | TestResult.Skipped p -> p
+            | TestResult.Skipped r -> r.Path
             | TestResult.Pending p -> p
 
         results

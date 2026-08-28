@@ -63,7 +63,7 @@ let private pathOf r =
     match r with
     | TestResult.Passed r -> List.rev r.Path
     | TestResult.Failed r -> List.rev r.Path
-    | TestResult.Skipped p -> List.rev p
+    | TestResult.Skipped r -> List.rev r.Path
     | TestResult.Pending p -> List.rev p
 
 let private durationOf r =
@@ -463,6 +463,67 @@ let main _ =
                                     match results[0] with
                                     | TestResult.Failed r -> assertThat (r.LineNumber > 0) isTrue
                                     | other -> failwithf "Expected Failed, got %A" other
+                                }
+                        )
+
+                    ]
+                )
+
+                // ------------------------------------------------------------------
+                // Skip reason
+                // ------------------------------------------------------------------
+
+                testList (
+                    "skip reason",
+                    [
+
+                        testAsync (
+                            "a configured skip reports SkipReason.Configured",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults [ test ("s", skipIf true, fun _ -> ()) ]
+
+                                    match results[0] with
+                                    | TestResult.Skipped r ->
+                                        assertThat r.Reason (isEqualTo SkipReason.Configured)
+                                    | other -> failwithf "Expected Skipped, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "a test sidelined by focus mode reports SkipReason.NotFocused",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                ftest ("focused", fun _ -> ())
+                                                test ("sidelined", fun _ -> ())
+                                            ]
+
+                                    match results[1] with
+                                    | TestResult.Skipped r ->
+                                        assertThat r.Reason (isEqualTo SkipReason.NotFocused)
+                                    | other -> failwithf "Expected Skipped, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "a configured skip wins over focus mode",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                ftest ("focused", fun _ -> ())
+                                                test ("both", skipIf true, fun _ -> ())
+                                            ]
+
+                                    match results[1] with
+                                    | TestResult.Skipped r ->
+                                        assertThat r.Reason (isEqualTo SkipReason.Configured)
+                                    | other -> failwithf "Expected Skipped, got %A" other
                                 }
                         )
 
