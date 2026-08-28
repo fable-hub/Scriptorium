@@ -146,16 +146,47 @@ module internal Advanced =
                     }
                 )
             )
-        else
+        elif Compiler.isPython then
             // Python drives its asyncs on one loop and BEAM on cheap processes, so neither starves
             // the way the .NET thread pool does; both raise a message-less timeout, hence the
             // relabelling. `Async.StartImmediate` is not an option on Python - it builds a detached
             // trampoline whose continuations never reach the caller.
             async {
+                let sw = UniversalStopwatch()
+
+                let timed =
+                    async {
+                        do! computation
+                        return sw.ElapsedMs()
+                    }
+
+                let! completedAt =
+                    async {
+                        try
+                            let! timeoutable = Async.StartChild(timed, ms)
+                            return! timeoutable
+                        with :? System.TimeoutException ->
+                            return raise (System.TimeoutException($"Test timed out after {ms}ms"))
+                    }
+
+                // Async.StartChild can return normally even when the budget was blown.
+                if completedAt >= ms then
+                    return raise (System.TimeoutException($"Test timed out after {ms}ms"))
+            }
+        else
+            async {
+                let sw = UniversalStopwatch()
+
                 try
                     let! timeoutable = Async.StartChild(computation, ms)
                     do! timeoutable
                 with :? System.TimeoutException ->
+                    return raise (System.TimeoutException($"Test timed out after {ms}ms"))
+
+                // Async.StartChild can return normally even when the budget was blown.
+                // A mutable object cannot cross into a BEAM child process, so the body cannot
+                // time itself and the budget is measured from here instead.
+                if sw.ElapsedMs() >= ms then
                     return raise (System.TimeoutException($"Test timed out after {ms}ms"))
             }
 
