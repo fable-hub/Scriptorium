@@ -265,13 +265,22 @@ module internal Advanced =
                     TestResult.Skipped
                         {
                             Path = currentPath
+                            FilePath = def.FilePath
+                            LineNumber = def.LineNumber
                             Reason = reason
                         }
 
                 // Author explicitly marked this test as pending (xtest / todo).
                 // The body is never executed regardless of focus mode or config.
                 if def.Mark = TestMark.Pending then
-                    report (TestResult.Pending currentPath)
+                    report (
+                        TestResult.Pending
+                            {
+                                Path = currentPath
+                                FilePath = def.FilePath
+                                LineNumber = def.LineNumber
+                            }
+                    )
                 elif effectiveConfig.Skip then
                     report (skipped SkipReason.Configured)
                 elif anyFocused && not focusedAncestor && def.Mark = TestMark.Normal then
@@ -283,6 +292,8 @@ module internal Advanced =
                         TestResult.Passed
                             {
                                 Path = currentPath
+                                FilePath = def.FilePath
+                                LineNumber = def.LineNumber
                                 Duration = sw.ElapsedMs()
                                 SlowThresholdMs = effectiveConfig.SlowThresholdMs
                             }
@@ -374,8 +385,24 @@ module internal Advanced =
                 | TestMark.Pending ->
                     let rec collectPending p tc =
                         match tc with
-                        | TestCase.SyncTest def -> [ TestResult.Pending(def.Name :: p) ]
-                        | TestCase.AsyncTest def -> [ TestResult.Pending(def.Name :: p) ]
+                        | TestCase.SyncTest def ->
+                            [
+                                TestResult.Pending
+                                    {
+                                        Path = def.Name :: p
+                                        FilePath = def.FilePath
+                                        LineNumber = def.LineNumber
+                                    }
+                            ]
+                        | TestCase.AsyncTest def ->
+                            [
+                                TestResult.Pending
+                                    {
+                                        Path = def.Name :: p
+                                        FilePath = def.FilePath
+                                        LineNumber = def.LineNumber
+                                    }
+                            ]
                         | TestCase.TestList def ->
                             def.Tests |> List.collect (collectPending (def.Name :: p))
 
@@ -437,7 +464,7 @@ module internal Advanced =
             | TestResult.Passed r -> r.Path
             | TestResult.Failed r -> r.Path
             | TestResult.Skipped r -> r.Path
-            | TestResult.Pending p -> p
+            | TestResult.Pending r -> r.Path
 
         results
         |> List.fold

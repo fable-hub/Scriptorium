@@ -64,7 +64,7 @@ let private pathOf r =
     | TestResult.Passed r -> List.rev r.Path
     | TestResult.Failed r -> List.rev r.Path
     | TestResult.Skipped r -> List.rev r.Path
-    | TestResult.Pending p -> List.rev p
+    | TestResult.Pending r -> List.rev r.Path
 
 let private durationOf r =
     match r with
@@ -463,6 +463,65 @@ let main _ =
                                     match results[0] with
                                     | TestResult.Failed r -> assertThat (r.LineNumber > 0) isTrue
                                     | other -> failwithf "Expected Failed, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "Passed result carries caller info",
+                            fun _ ->
+                                async {
+                                    let! results = runToResults [ test ("ok", fun _ -> ()) ]
+
+                                    match results[0] with
+                                    | TestResult.Passed r ->
+                                        assertThat (r.FilePath.Length > 0) isTrue
+                                        assertThat (r.LineNumber > 0) isTrue
+                                    | other -> failwithf "Expected Passed, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "Skipped result carries caller info",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults [ test ("skipped", skipIf true, fun _ -> ()) ]
+
+                                    match results[0] with
+                                    | TestResult.Skipped r ->
+                                        assertThat (r.FilePath.Length > 0) isTrue
+                                        assertThat (r.LineNumber > 0) isTrue
+                                    | other -> failwithf "Expected Skipped, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "Pending result carries caller info",
+                            fun _ ->
+                                async {
+                                    let! results = runToResults [ xtest ("todo", fun _ -> ()) ]
+
+                                    match results[0] with
+                                    | TestResult.Pending r ->
+                                        assertThat (r.FilePath.Length > 0) isTrue
+                                        assertThat (r.LineNumber > 0) isTrue
+                                    | other -> failwithf "Expected Pending, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "Pending result under an xtestList carries caller info",
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [ xtestList ("list", [ test ("t", fun _ -> ()) ]) ]
+
+                                    match results[0] with
+                                    | TestResult.Pending r ->
+                                        assertThat (r.FilePath.Length > 0) isTrue
+                                        assertThat (r.LineNumber > 0) isTrue
+                                    | other -> failwithf "Expected Pending, got %A" other
                                 }
                         )
 

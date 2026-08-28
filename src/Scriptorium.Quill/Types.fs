@@ -72,12 +72,23 @@ type SkipReason =
 type SkippedResult =
     {
         Path: string list
+        FilePath: string
+        LineNumber: int
         Reason: SkipReason
+    }
+
+type PendingResult =
+    {
+        Path: string list
+        FilePath: string
+        LineNumber: int
     }
 
 type PassedResult =
     {
         Path: string list
+        FilePath: string
+        LineNumber: int
         Duration: int
         SlowThresholdMs: int
     }
@@ -97,4 +108,4 @@ type TestResult =
     | Passed of PassedResult
     | Failed of FailedResult
     | Skipped of SkippedResult // runtime/conditional skip (skipIf, focus mode)
-    | Pending of path: string list // author-marked (xtest, todo)
+    | Pending of PendingResult // author-marked (xtest, todo)
