@@ -47,14 +47,42 @@ module private Internal =
             | None -> ()
         }
 
+    let minimumTimeoutMs = 15_000
+
+    // Playwright's `expect` retries for 5000 ms by default before rejecting with its message.
+    let browserTimeout (config: TestConfig) : TestConfig =
+        match config.TimeoutMs with
+        | Some ms when ms < minimumTimeoutMs ->
+            { config with
+                TimeoutMs = Some minimumTimeoutMs
+            }
+        | _ -> config
+
     /// Creates a headless Chromium browser and page, runs f, then closes both.
     let withPage (f: Page -> Promise<unit>) : Async<unit> = run true f
 
     /// Like withPage but opens a visible browser window - useful for debugging.
     let withHeadedPage (f: Page -> Promise<unit>) : Async<unit> = run false f
 
-
 type BrowserTest =
+
+    static member testPage
+        (
+            name: string,
+            configurer: TestConfig -> TestConfig,
+            body: Page -> Promise<unit>,
+            [<CallerFilePath>] ?filePath: string,
+            [<CallerLineNumber>] ?lineNumber: int
+        )
+        : TestCase
+        =
+        Test.testAsync (
+            name,
+            Internal.browserTimeout >> configurer,
+            Internal.withPage body,
+            ?filePath = filePath,
+            ?lineNumber = lineNumber
+        )
 
     static member testPage
         (
@@ -65,8 +93,21 @@ type BrowserTest =
         )
         : TestCase
         =
-        Test.testAsync (
+        BrowserTest.testPage (name, id, body, ?filePath = filePath, ?lineNumber = lineNumber)
+
+    static member xtestPage
+        (
+            name: string,
+            configurer: TestConfig -> TestConfig,
+            body: Page -> Promise<unit>,
+            [<CallerFilePath>] ?filePath: string,
+            [<CallerLineNumber>] ?lineNumber: int
+        )
+        : TestCase
+        =
+        Test.xtestAsync (
             name,
+            Internal.browserTimeout >> configurer,
             Internal.withPage body,
             ?filePath = filePath,
             ?lineNumber = lineNumber
@@ -81,8 +122,21 @@ type BrowserTest =
         )
         : TestCase
         =
-        Test.xtestAsync (
+        BrowserTest.xtestPage (name, id, body, ?filePath = filePath, ?lineNumber = lineNumber)
+
+    static member ftestPage
+        (
+            name: string,
+            configurer: TestConfig -> TestConfig,
+            body: Page -> Promise<unit>,
+            [<CallerFilePath>] ?filePath: string,
+            [<CallerLineNumber>] ?lineNumber: int
+        )
+        : TestCase
+        =
+        Test.ftestAsync (
             name,
+            Internal.browserTimeout >> configurer,
             Internal.withPage body,
             ?filePath = filePath,
             ?lineNumber = lineNumber
@@ -97,12 +151,7 @@ type BrowserTest =
         )
         : TestCase
         =
-        Test.ftestAsync (
-            name,
-            Internal.withPage body,
-            ?filePath = filePath,
-            ?lineNumber = lineNumber
-        )
+        BrowserTest.ftestPage (name, id, body, ?filePath = filePath, ?lineNumber = lineNumber)
 
     static member dtestPage
         (

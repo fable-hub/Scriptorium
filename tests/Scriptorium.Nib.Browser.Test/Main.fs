@@ -10,15 +10,79 @@ open type Scriptorium.Nib.Browser.BrowserTest
 open type Scriptorium.Quill.Runner
 open type Scriptorium.Quill.Test
 
+let private runToResults (tests: TestCase list) : Async<TestResult list> =
+    Advanced.execute false TestConfig.Default Prelude.processorCount ignore tests
+
 [<EntryPoint>]
 let main _ =
 
     let tests =
         testList (
             "Scriptorium.Nib.Browser",
-            // Set a longer timeout for browser tests since GitHub Actions fails 1 times out of 2 with the default 5s timeout.
-            timeout 10000,
             [
+
+                testList (
+                    "Timeout",
+                    [
+
+                        testAsync (
+                            "a failing assertion reports Playwright's message instead of a timeout",
+                            timeout 30_000,
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                testPage (
+                                                    "wrong text",
+                                                    fun page ->
+                                                        promise {
+                                                            do! page.setContent "<p id='x'>Ada</p>"
+
+                                                            do!
+                                                                assertLocator
+                                                                    (page.locator "#x")
+                                                                    (haveText "Wrong")
+                                                        }
+                                                )
+                                            ]
+
+                                    match results with
+                                    | [ TestResult.Failed r ] when
+                                        r.Message.Contains "Wrong" && r.Message.Contains "Ada"
+                                        ->
+                                        ()
+                                    | other ->
+                                        failwithf "Expected Playwright's failure, got %A" other
+                                }
+                        )
+
+                        testAsync (
+                            "a configurer overrides the browser timeout",
+                            timeout 30_000,
+                            fun _ ->
+                                async {
+                                    let! results =
+                                        runToResults
+                                            [
+                                                testPage (
+                                                    "never settles",
+                                                    timeout 1_000,
+                                                    fun _ -> Promise.create (fun _ _ -> ())
+                                                )
+                                            ]
+
+                                    match results with
+                                    | [ TestResult.Failed r ] ->
+                                        assertThat
+                                            r.Message
+                                            (isEqualTo "Test timed out after 1000ms")
+                                    | other -> failwithf "Expected a timeout, got %A" other
+                                }
+                        )
+
+                    ]
+                )
 
                 testPage (
                     "a created div exists in the document",

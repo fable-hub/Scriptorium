@@ -10,8 +10,11 @@ description: BrowserTest helpers and UserEvents for writing Playwright-based end
 | Helper | Description |
 |---|---|
 | `BrowserTest.testPage(name, body)` | Normal headless test |
+| `BrowserTest.testPage(name, configurer, body)` | Normal headless test with a configurer |
 | `BrowserTest.xtestPage(name, body)` | Pending (skipped) test |
+| `BrowserTest.xtestPage(name, configurer, body)` | Pending (skipped) test with a configurer |
 | `BrowserTest.ftestPage(name, body)` | Focused test |
+| `BrowserTest.ftestPage(name, configurer, body)` | Focused test with a configurer |
 | `BrowserTest.dtestPage(name, body)` | Debug mode: headed, auto-paused, focused, no timeout |
 
 ```fsharp
@@ -48,6 +51,27 @@ let main _ =
         ])
     ]
 ```
+
+## Timeout
+
+`testPage`, `xtestPage` and `ftestPage` have a timeout of at least 15000 ms.
+
+A timeout below 15000 ms set with `runTestsWith` or `testList` is raised to 15000 ms. `noTimeout` and timeouts above 15000 ms are kept.
+
+A configurer passed to the test itself is applied after this rule, so its timeout is used as is.
+
+```fsharp
+testPage ("loads the dashboard", timeout 30_000, fun page ->
+    promise {
+        do! page.goto "http://localhost:3000/dashboard"
+        do! assertLocator (page.locator "h1") toBeVisible
+    }
+)
+```
+
+:::caution
+Playwright assertions retry for 5000 ms before failing. With a test timeout close to that value, the test fails with `Test timed out` instead of the assertion message.
+:::
 
 ## Debug mode - `dtestPage`
 
