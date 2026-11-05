@@ -13,10 +13,10 @@
         <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
     </PropertyGroup>
     <PropertyGroup>
-        <PackageProjectUrl>https://github.com/fable-hub/Fable.UI</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/fable-hub/Scriptorium</PackageProjectUrl>
         <Packagelicense>
-            https://github.com/fable-hub/Fable.UI/blob/master/LICENSE.txt</Packagelicense>
-        <RepositoryUrl>https://github.com/fable-hub/Fable.UI</RepositoryUrl>
+            https://github.com/fable-hub/Scriptorium/blob/master/LICENSE.txt</Packagelicense>
+        <RepositoryUrl>https://github.com/fable-hub/Scriptorium</RepositoryUrl>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
