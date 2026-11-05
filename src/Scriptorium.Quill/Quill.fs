@@ -593,11 +593,7 @@ module internal Advanced =
                 $"%.2f{(float report.Duration / 1000.0)}s".Replace(".00s", "s")
 
         let startAt =
-            sprintf
-                "%02d:%02d:%02d"
-                report.StartTime.Hour
-                report.StartTime.Minute
-                report.StartTime.Second
+            $"%02d{report.StartTime.Hour}:%02d{report.StartTime.Minute}:%02d{report.StartTime.Second}"
 
         let parts =
             [
