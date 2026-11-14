@@ -490,6 +490,52 @@ let main _ =
                 )
 
                 // ------------------------------------------------------------------
+                // Value Option
+                // ------------------------------------------------------------------
+
+                testList (
+                    "voption",
+                    [
+
+                        test (
+                            "ValueOption.isSome passes for Some",
+                            fun _ -> assertThat (ValueSome 42) ValueOption.isSome
+                        )
+
+                        test (
+                            "ValueOption.isNone passes for None",
+                            fun _ -> assertThat (ValueNone: int voption) ValueOption.isNone
+                        )
+
+                        test (
+                            "ValueOption.value unwraps and allows further assertions",
+                            fun _ -> assertThat (ValueSome 42) (ValueOption.value >> isEqualTo 42)
+                        )
+
+                        test (
+                            "ValueOption.value stops chain on None",
+                            fun _ ->
+                                let mutable ran = false
+
+                                assertThat
+                                    (fun _ ->
+                                        assertThat
+                                            (ValueNone: int voption)
+                                            (ValueOption.value
+                                             >> satisfy (fun _ ->
+                                                 ran <- true
+                                                 true
+                                             ))
+                                    )
+                                    throws
+
+                                assertThat ran isFalse
+                        )
+
+                    ]
+                )
+
+                // ------------------------------------------------------------------
                 // Result
                 // ------------------------------------------------------------------
 

@@ -432,6 +432,25 @@ module Assertion =
         let value<'a> : Assertion<'a option, 'a> = forceError isSome >> focus Option.get
 
     // ---------------------------------------------------------------------------
+    // ValueOption assertions
+    // ---------------------------------------------------------------------------
+
+    [<RequireQualifiedAccess>]
+    module ValueOption =
+
+        /// Asserts the voption is None.
+        let isNone<'a> : Assertion<'a voption> =
+            assertion (fun x -> ValueOption.isNone x) (fun x -> $"given %A{x} should be None")
+
+        /// Asserts the voption is Some.
+        let isSome<'a> : Assertion<'a voption> =
+            assertion (fun x -> ValueOption.isSome x) (fun _ -> "given None should be Some")
+
+        /// <summary>Asserts the voption is Some and extracts the inner value as the new subject.</summary>
+        /// <remarks>Aborts the chain if the value is None (via <c>forceError</c>).</remarks>
+        let value<'a> : Assertion<'a voption, 'a> = forceError isSome >> focus ValueOption.get
+
+    // ---------------------------------------------------------------------------
     // Result assertions
     // ---------------------------------------------------------------------------
 

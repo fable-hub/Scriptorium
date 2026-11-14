@@ -112,6 +112,19 @@ assertThat (Some 42)             (Option.value >> isEqualTo 42)
 assertThat (None : int option)   Option.isNone
 ```
 
+## ValueOption
+
+| Assertion | Passes when |
+|---|---|
+| `ValueOption.isSome` | voption is `Some` |
+| `ValueOption.isNone` | voption is `None` |
+| `ValueOption.value` | voption is `Some`; shifts subject to the inner value (aborts if `None`) |
+
+```fsharp
+assertThat (ValueSome 42)             (ValueOption.value >> isEqualTo 42)
+assertThat (ValueNone : int voption)  ValueOption.isNone
+```
+
 ## Result
 
 | Assertion | Passes when |
